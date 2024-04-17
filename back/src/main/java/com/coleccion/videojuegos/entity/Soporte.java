@@ -1,3 +1,4 @@
+//Esta es la parte de coleccionismo
 package com.coleccion.videojuegos.entity;
 
 import com.coleccion.videojuegos.entity.Enums.Distribucion;
@@ -8,6 +9,8 @@ import com.coleccion.videojuegos.entity.Enums.Tipo;
 
 import jakarta.persistence.*;
 
+@Entity
+@Table(name="SOPORTE")
 public class Soporte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +35,11 @@ public class Soporte {
 	private Region region;
 	@Column(name = "ANYO_SALIDA_DISTRIBUCION")
     private int anyoSalidaDist;
-
+	@Column(name = "TIENDA")
+    private int tienda;
+    @ManyToOne
+    @JoinColumn(name = "ID_VIDEOJUEGO")
+    private Videojuego videojuego;
 
 	public int getId() {
 		return this.id;
@@ -102,4 +109,20 @@ public class Soporte {
 		this.anyoSalidaDist = anyoSalidaDist;
 	}
 
+	public int getTienda() {
+		return this.tienda;
+	}
+
+	public void setTienda(int tienda) {
+		this.tienda = tienda;
+	}
+
+	public Videojuego getVideojuego() {
+		return this.videojuego;
+	}
+
+	public void setVideojuego(Videojuego videojuego) {
+		this.videojuego = videojuego;
+	}
+	
 }

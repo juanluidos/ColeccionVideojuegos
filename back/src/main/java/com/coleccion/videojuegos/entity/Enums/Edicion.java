@@ -1,5 +1,8 @@
 package com.coleccion.videojuegos.entity.Enums;
 
 public enum Edicion {
-//TODO
+Normal,
+Deluxe,
+Coleccionista,
+Limitada
 }

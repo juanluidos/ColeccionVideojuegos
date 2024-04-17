@@ -1,5 +1,11 @@
 package com.coleccion.videojuegos.entity.Enums;
 
 public enum Avance {
-//TODO
+Backlog,
+Próximo,
+Jugando,
+Jugado,
+Completado,
+Dropeado,
+SinFin
 }

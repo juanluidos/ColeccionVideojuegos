@@ -8,14 +8,15 @@ import com.coleccion.videojuegos.entity.Enums.Genero;
 import com.coleccion.videojuegos.entity.Enums.Plataforma;
 
 import jakarta.persistence.*;
-
+@Entity
+@Table(name="VIDEOJUEGO")
 public class Videojuego {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private int id;
 	@Column(name = "NOMBRE")
-    private String anyoJugado;
+    private String nombre;
 	@Column(name="PRECIO")
 	private float precio;
 	@Column(name="FECHA_LANZAMIENTO")
@@ -43,12 +44,12 @@ public class Videojuego {
 		this.id = id;
 	}
 
-	public String getAnyoJugado() {
-		return this.anyoJugado;
+	public String getNombre() {
+		return this.nombre;
 	}
 
-	public void setAnyoJugado(String anyoJugado) {
-		this.anyoJugado = anyoJugado;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 
 	public float getPrecio() {
