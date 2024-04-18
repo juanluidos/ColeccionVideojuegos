@@ -5,8 +5,8 @@ import com.coleccion.videojuegos.entity.Enums.Distribucion;
 import com.coleccion.videojuegos.entity.Enums.Edicion;
 import com.coleccion.videojuegos.entity.Enums.Estado;
 import com.coleccion.videojuegos.entity.Enums.Region;
+import com.coleccion.videojuegos.entity.Enums.Tienda;
 import com.coleccion.videojuegos.entity.Enums.Tipo;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -15,7 +15,7 @@ public class Soporte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private int id;
+    private Integer id;
 	@Enumerated(EnumType.STRING)
 	@Column(name="TIPO")
 	private Tipo tipo;
@@ -34,18 +34,19 @@ public class Soporte {
 	@Enumerated(EnumType.STRING)
 	private Region region;
 	@Column(name = "ANYO_SALIDA_DISTRIBUCION")
-    private int anyoSalidaDist;
+    private Integer anyoSalidaDist;
 	@Column(name = "TIENDA")
-    private int tienda;
+	@Enumerated(EnumType.STRING)
+    private Tienda tienda;
     @ManyToOne
     @JoinColumn(name = "ID_VIDEOJUEGO")
     private Videojuego videojuego;
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -101,20 +102,12 @@ public class Soporte {
 		this.region = region;
 	}
 
-	public int getAnyoSalidaDist() {
+	public Integer getAnyoSalidaDist() {
 		return this.anyoSalidaDist;
 	}
 
-	public void setAnyoSalidaDist(int anyoSalidaDist) {
+	public void setAnyoSalidaDist(Integer anyoSalidaDist) {
 		this.anyoSalidaDist = anyoSalidaDist;
-	}
-
-	public int getTienda() {
-		return this.tienda;
-	}
-
-	public void setTienda(int tienda) {
-		this.tienda = tienda;
 	}
 
 	public Videojuego getVideojuego() {
@@ -123,6 +116,14 @@ public class Soporte {
 
 	public void setVideojuego(Videojuego videojuego) {
 		this.videojuego = videojuego;
+	}
+
+	public Tienda getTienda() {
+		return this.tienda;
+	}
+
+	public void setTienda(Tienda tienda) {
+		this.tienda = tienda;
 	}
 	
 }

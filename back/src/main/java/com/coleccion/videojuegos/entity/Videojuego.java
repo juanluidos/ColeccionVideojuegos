@@ -14,11 +14,11 @@ public class Videojuego {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private int id;
+    private Integer id;
 	@Column(name = "NOMBRE")
     private String nombre;
 	@Column(name="PRECIO")
-	private float precio;
+	private Float precio;
 	@Column(name="FECHA_LANZAMIENTO")
 	private Date fechaLanzamiento;
 	@Column(name="FECHA_COMPRA")
@@ -36,11 +36,11 @@ public class Videojuego {
 	@Column(name="SOPORTE")
 	private List<Soporte> soporte = new ArrayList<>();
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -52,11 +52,11 @@ public class Videojuego {
 		this.nombre = nombre;
 	}
 
-	public float getPrecio() {
+	public Float getPrecio() {
 		return this.precio;
 	}
 
-	public void setPrecio(float precio) {
+	public void setPrecio(Float precio) {
 		this.precio = precio;
 	}
 
@@ -106,5 +106,5 @@ public class Videojuego {
 
 	public void setSoporte(List<Soporte> soporte) {
 		this.soporte = soporte;
-	}
+	}	
 }

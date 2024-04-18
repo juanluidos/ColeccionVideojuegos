@@ -10,35 +10,35 @@ public class Progreso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private int id;
+    private Integer id;
 	@Column(name = "ANYO_JUGADO")
-    private int anyoJugado;
+    private Integer anyoJugado;
 	@Enumerated(EnumType.STRING)
 	@Column(name="AVANCE")
 	private Avance avance;
 	@Column(name = "HORAS_JUGADAS")
-    private float horasJugadas;
+    private Float horasJugadas;
 	@Column(name = "COMPLETADO100")
     private boolean completadoCien;
 	@Column(name = "NOTA")
-    private float nota;
+    private Float nota;
     @ManyToOne
     @JoinColumn(name = "ID_VIDEOJUEGO")
     private Videojuego videojuego;
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getAnyoJugado() {
+	public Integer getAnyoJugado() {
 		return this.anyoJugado;
 	}
 
-	public void setAnyoJugado(int anyoJugado) {
+	public void setAnyoJugado(Integer anyoJugado) {
 		this.anyoJugado = anyoJugado;
 	}
 
@@ -50,19 +50,19 @@ public class Progreso {
 		this.avance = avance;
 	}
 
-	public float getHorasJugadas() {
+	public Float getHorasJugadas() {
 		return this.horasJugadas;
 	}
 
-	public void setHorasJugadas(float horasJugadas) {
+	public void setHorasJugadas(Float horasJugadas) {
 		this.horasJugadas = horasJugadas;
 	}
 
-	public float getNota() {
+	public Float getNota() {
 		return this.nota;
 	}
 
-	public void setNota(float nota) {
+	public void setNota(Float nota) {
 		this.nota = nota;
 	}
 
