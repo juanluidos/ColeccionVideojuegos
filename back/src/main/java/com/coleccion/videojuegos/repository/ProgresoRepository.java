@@ -11,7 +11,7 @@ import com.coleccion.videojuegos.entity.Videojuego;
 
 @Repository
 public interface ProgresoRepository extends CrudRepository<Progreso, Integer> {
-	Optional<Videojuego> findById(int id);
+	Optional<Progreso> findById(int id);
 
 	void deleteById(int id);
 

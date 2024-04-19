@@ -13,7 +13,7 @@ import com.coleccion.videojuegos.entity.Videojuego;
 @Repository
 public interface SoporteRepository extends CrudRepository<Soporte, Integer>{
 	
-	Optional<Videojuego> findById(int id);
+	Optional<Soporte> findById(int id);
 
 	void deleteById(int id);
 

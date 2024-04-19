@@ -7,6 +7,8 @@ import com.coleccion.videojuegos.entity.Enums.Estado;
 import com.coleccion.videojuegos.entity.Enums.Region;
 import com.coleccion.videojuegos.entity.Enums.Tienda;
 import com.coleccion.videojuegos.entity.Enums.Tipo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -29,7 +31,7 @@ public class Soporte {
 	@Column(name="DISTRIBUCION")
 	private Distribucion distribucion;
 	@Column(name="PRECINTADO")
-	private boolean precintado;
+	private Boolean precintado;
 	@Column(name="REGION")
 	@Enumerated(EnumType.STRING)
 	private Region region;
@@ -38,6 +40,7 @@ public class Soporte {
 	@Column(name = "TIENDA")
 	@Enumerated(EnumType.STRING)
     private Tienda tienda;
+	@JsonIgnore
     @ManyToOne
     @JoinColumn(name = "ID_VIDEOJUEGO")
     private Videojuego videojuego;
@@ -82,11 +85,11 @@ public class Soporte {
 		this.distribucion = distribucion;
 	}
 
-	public boolean isPrecintado() {
+	public Boolean isPrecintado() {
 		return this.precintado;
 	}
 
-	public boolean getPrecintado() {
+	public Boolean getPrecintado() {
 		return this.precintado;
 	}
 

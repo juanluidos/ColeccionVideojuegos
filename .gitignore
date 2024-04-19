@@ -65,5 +65,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
-resources/application.properties

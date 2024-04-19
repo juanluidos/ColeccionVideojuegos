@@ -1,6 +1,6 @@
 package com.coleccion.videojuegos.service;
 
-import java.sql.Date;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -10,17 +10,8 @@ import org.springframework.stereotype.Service;
 import com.coleccion.videojuegos.entity.Progreso;
 import com.coleccion.videojuegos.entity.Soporte;
 import com.coleccion.videojuegos.entity.Videojuego;
-import com.coleccion.videojuegos.entity.Enums.Avance;
-import com.coleccion.videojuegos.entity.Enums.Distribucion;
-import com.coleccion.videojuegos.entity.Enums.Edicion;
-import com.coleccion.videojuegos.entity.Enums.Estado;
-import com.coleccion.videojuegos.entity.Enums.Genero;
-import com.coleccion.videojuegos.entity.Enums.Plataforma;
-import com.coleccion.videojuegos.entity.Enums.Region;
-import com.coleccion.videojuegos.entity.Enums.Tienda;
-import com.coleccion.videojuegos.entity.Enums.Tipo;
-import com.coleccion.videojuegos.repository.SoporteRepository;
 import com.coleccion.videojuegos.repository.VideojuegoRepository;
+import com.coleccion.videojuegos.web.requests.VideojuegoCompletoRequest;
 import com.coleccion.videojuegos.web.requests.VideojuegoRequest;
 
 import jakarta.transaction.Transactional;
@@ -46,11 +37,8 @@ public class VideojuegosService {
 		return get(videojuego);
 	}
 
-	public void deleteVideojuego(Integer id){
-		videojuegoRepository.deleteById(id);
-	}
 	@Transactional
-	public Videojuego newVideojuego(VideojuegoRequest vRequest) throws Exception{
+	public Videojuego newVideojuego(VideojuegoCompletoRequest vRequest) throws Exception{
 		Videojuego videojuego = new Videojuego();
 		try {
 			videojuego.setNombre(vRequest.getNombre());
@@ -63,20 +51,82 @@ public class VideojuegosService {
 			//si existen datos de progreso o soporte llamar a una funcion de crear progreso crear soporte:
 			if (vRequest.getAnyoJugado() != null || vRequest.getAvance() != null || vRequest.getHorasJugadas() != null || vRequest.getCompletadoCien() != null || vRequest.getNota() != null) {
 				// Código a ejecutar si al menos uno de los valores no es null			
-				progresoService.newProgreso(new Progreso(), vRequest.getAnyoJugado(), vRequest.getAvance(), vRequest.getHorasJugadas().floatValue(), vRequest.getCompletadoCien(), vRequest.getNota().floatValue());
+				Progreso nuevoProgreso = progresoService.newProgreso(new Progreso(), vRequest.getAnyoJugado(), vRequest.getAvance(), vRequest.getHorasJugadas().floatValue(), vRequest.getCompletadoCien(), vRequest.getNota().floatValue());
+				videojuego.addProgreso(nuevoProgreso);
 			}
-			else if(vRequest.getTipo() != null || vRequest.getEstado() != null || vRequest.getEdicion() != null || vRequest.getDistribucion() != null 
+			if(vRequest.getTipo() != null || vRequest.getEstado() != null || vRequest.getEdicion() != null || vRequest.getDistribucion() != null 
 				|| vRequest.getPrecintado() != null || vRequest.getRegion() != null || vRequest.getAnyoSalidaDist() != null || vRequest.getTienda() != null){
 					
-				soporteService.newSoporte(new Soporte(), vRequest.getTipo(), vRequest.getEstado(), vRequest.getEdicion(), vRequest.getDistribucion(), vRequest.getPrecintado(), vRequest.getRegion(),  vRequest.getAnyoSalidaDist(), vRequest.getTienda());
+				Soporte nuevoSoporte = soporteService.newSoporte(new Soporte(), vRequest.getTipo(), vRequest.getEstado(), vRequest.getEdicion(), vRequest.getDistribucion(), vRequest.getPrecintado(), vRequest.getRegion(),  vRequest.getAnyoSalidaDist(), vRequest.getTienda());
+				videojuego.addSoporte(nuevoSoporte);
 
 			}
 			videojuegoRepository.save(videojuego);
 		}
 		catch(Exception e){
-			throw e;
+			throw new Exception("Error al crear el videojuego: " + e.getMessage());
 		}
 		return videojuego;
 	}
-}
 
+	//para updatear solo el apartado videojuego 
+	public Videojuego updateVideojuego(Integer id, VideojuegoRequest vRequest) throws Exception{
+		try {
+			Optional<Videojuego> videojuegoOpcional = videojuegoRepository.findById(id);
+			if (videojuegoOpcional.isPresent()) {
+				Videojuego videojuego = videojuegoOpcional.get();
+				boolean needUpdate = false;
+	
+				// Compara y establece el nombre si es diferente y no nulo
+				if (vRequest.getNombre() != null && !vRequest.getNombre().equals(videojuego.getNombre())) {
+					videojuego.setNombre(vRequest.getNombre());
+					needUpdate = true;
+				}
+				if (vRequest.getPrecio() != null && !vRequest.getPrecio().equals(videojuego.getPrecio())) {
+					videojuego.setPrecio(vRequest.getPrecio());
+					needUpdate = true;
+				}
+				if (vRequest.getFechaLanzamiento() != null && !vRequest.getFechaLanzamiento().equals(videojuego.getFechaLanzamiento())) {
+					videojuego.setFechaLanzamiento(vRequest.getFechaLanzamiento());
+					needUpdate = true;
+				}
+				if (vRequest.getFechaCompra() != null && !vRequest.getFechaCompra().equals(videojuego.getFechaCompra())) {
+					videojuego.setFechaCompra(vRequest.getFechaCompra());
+					needUpdate = true;
+				}
+				if (vRequest.getPlataforma() != null && !vRequest.getPlataforma().equals(videojuego.getPlataforma())) {
+					videojuego.setPlataforma(vRequest.getPlataforma());
+					needUpdate = true;
+				}
+				if (vRequest.getGenero() != null && !vRequest.getGenero().equals(videojuego.getGenero())) {
+					videojuego.setGenero(vRequest.getGenero());
+					needUpdate = true;
+				}
+	
+				// Si hay al menos un cambio, actualiza la entidad
+				if (needUpdate) {
+					videojuegoRepository.save(videojuego);
+				} else{
+					throw new Exception("No hay ningún cambio a realizar");
+				}
+	
+				return videojuego;
+			} else {
+				throw new Exception("No existe dicho videojuego en la base de datos");
+			}
+			
+		} catch(Exception e){
+			throw new Exception("Error al actualizar el videojuego: " + e.getMessage());
+		}
+	}
+
+	public void deleteVideojuego(Integer id) throws Exception{
+		try{
+			videojuegoRepository.deleteById(id);
+		}
+		catch(Exception e){
+			throw new Exception("Error al eliminar el videojuego: " + e.getMessage());
+		}
+	}
+
+}

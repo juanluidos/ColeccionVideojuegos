@@ -2,6 +2,7 @@
 package com.coleccion.videojuegos.entity;
 
 import com.coleccion.videojuegos.entity.Enums.Avance;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 @Entity
@@ -19,9 +20,10 @@ public class Progreso {
 	@Column(name = "HORAS_JUGADAS")
     private Float horasJugadas;
 	@Column(name = "COMPLETADO100")
-    private boolean completadoCien;
+    private Boolean completadoCien;
 	@Column(name = "NOTA")
     private Float nota;
+	@JsonIgnore
     @ManyToOne
     @JoinColumn(name = "ID_VIDEOJUEGO")
     private Videojuego videojuego;
@@ -67,11 +69,11 @@ public class Progreso {
 	}
 
 
-	public boolean isCompletadoCien() {
+	public Boolean isCompletadoCien() {
 		return this.completadoCien;
 	}
 
-	public boolean getCompletadoCien() {
+	public Boolean getCompletadoCien() {
 		return this.completadoCien;
 	}
 

@@ -96,15 +96,17 @@ public class Videojuego {
 		return this.progreso;
 	}
 
-	public void setProgreso(List<Progreso> progreso) {
-		this.progreso = progreso;
+	public void addProgreso(Progreso elementoProgreso) {
+		this.progreso.add(elementoProgreso);
+		elementoProgreso.setVideojuego(this);
 	}
 
 	public List<Soporte> getSoporte() {
 		return this.soporte;
 	}
 
-	public void setSoporte(List<Soporte> soporte) {
-		this.soporte = soporte;
-	}	
+    public void addSoporte(Soporte elementoSoporte) {
+        this.soporte.add(elementoSoporte);
+        elementoSoporte.setVideojuego(this); // Asegúrate de establecer la relación bidireccional si es necesario
+    }
 }
