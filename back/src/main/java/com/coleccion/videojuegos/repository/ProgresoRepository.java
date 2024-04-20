@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.coleccion.videojuegos.entity.Progreso;
-import com.coleccion.videojuegos.entity.Videojuego;
 
 @Repository
 public interface ProgresoRepository extends CrudRepository<Progreso, Integer> {

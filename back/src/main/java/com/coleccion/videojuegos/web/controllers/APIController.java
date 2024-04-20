@@ -84,6 +84,8 @@ public class APIController {
 		return soporteService.updateSoporte(idVideojuego, idSoporte, sRequest);
 	
 	}
+
+	
 	/** Progreso  **/
 
 	//para updatear solo el apartado soporte 

@@ -8,7 +8,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.coleccion.videojuegos.entity.Soporte;
-import com.coleccion.videojuegos.entity.Videojuego;
 
 @Repository
 public interface SoporteRepository extends CrudRepository<Soporte, Integer>{
