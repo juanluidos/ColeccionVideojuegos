@@ -50,9 +50,15 @@ public class APIController {
 	/** Videojuegos **/
 	
 	@GetMapping("/api/v1/videojuegos")
-	public List<Videojuego> getUsuarios() throws Exception {
+	public List<Videojuego> getVideojuegos() throws Exception {
 		return videojuegosService.listAllVideojuegos();
 	}
+
+	@GetMapping("/api/v1/videojuegos/{id}")
+	public Videojuego getVideojuego(@PathVariable("id") Integer id) throws Exception {
+		return videojuegosService.getVideojuego(id);
+	}
+
 	@PostMapping("/api/v1/videojuegos/new")
 	public Videojuego crearVideojuego (@RequestBody VideojuegoCompletoRequest vRequest) throws Exception{
 
@@ -77,6 +83,19 @@ public class APIController {
 
 	/** Soporte **/
 
+	@GetMapping("/api/v1/soporte/{idVideojuego}")
+	public List<Soporte> getSoporte(@PathVariable("idVideojuego") Integer idVideojuego) throws Exception {
+		return videojuegosService.getSoporteListByVideojuego(idVideojuego);
+	}
+
+	@PostMapping("/api/v1/soporte/{idVideojuego}/new")
+	public Soporte crearSoporte (@PathVariable("idVideojuego") Integer idVideojuego, @RequestBody SoporteRequest sRequest) throws Exception{
+
+		System.out.println(sRequest);
+		return soporteService.newSoporte(idVideojuego, sRequest);
+
+	}
+	
 	//para updatear solo el apartado soporte 
 	@PutMapping("/api/v1/soporte/{idVideojuego}/{idSoporte}/change")
 	public Soporte editarSoporte (@PathVariable("idVideojuego") Integer idVideojuego, @PathVariable("idSoporte") Integer idSoporte, @RequestBody SoporteRequest sRequest) throws Exception {
@@ -85,14 +104,43 @@ public class APIController {
 	
 	}
 
+	@DeleteMapping("/api/v1/soporte/{idVideojuego}/{idSoporte}/delete")
+	public ResponseEntity<String> deleteSoporte(@PathVariable("idVideojuego") Integer idVideojuego, @PathVariable("idSoporte") Integer idSoporte) throws Exception {
+		
+		soporteService.deleteSoporte(idSoporte);
+
+		return ResponseEntity.status(HttpStatus.OK).body("Soporte con id " + idSoporte + " eliminado correctamente");
+	}
+
+
 	
 	/** Progreso  **/
 
-	//para updatear solo el apartado soporte 
+	@GetMapping("/api/v1/progreso/{idVideojuego}")
+	public List<Progreso> getProgreso(@PathVariable("idVideojuego") Integer idVideojuego) throws Exception {
+		return videojuegosService.getProgresoListByVideojuego(idVideojuego);
+	}
+
+	@PostMapping("/api/v1/progreso/{idVideojuego}/new")
+	public Progreso crearProgreso (@PathVariable("idVideojuego") Integer idVideojuego, @RequestBody ProgresoRequest pRequest) throws Exception{
+
+		return progresoService.newProgreso(idVideojuego, pRequest);
+
+	}
+
+	//para updatear solo el apartado progreso 
 	@PutMapping("/api/v1/progreso/{idVideojuego}/{idProgreso}/change")
 	public Progreso editarProgreso (@PathVariable("idVideojuego") Integer idVideojuego, @PathVariable("idProgreso") Integer idProgreso, @RequestBody ProgresoRequest pRequest) throws Exception {
 		
 		return progresoService.updateProgreso(idVideojuego, idProgreso, pRequest);
 	
+	}
+
+	@DeleteMapping("/api/v1/progreso/{idVideojuego}/{idProgreso}/delete")
+	public ResponseEntity<String> deleteProgreso(@PathVariable("idVideojuego") Integer idVideojuego, @PathVariable("idProgreso") Integer idProgreso) throws Exception {
+		
+		progresoService.deleteProgreso(idProgreso);
+
+		return ResponseEntity.status(HttpStatus.OK).body("Progreso con id " + idProgreso + " eliminado correctamente");
 	}
 }

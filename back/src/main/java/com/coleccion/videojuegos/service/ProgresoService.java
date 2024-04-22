@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.coleccion.videojuegos.entity.Progreso;
+import com.coleccion.videojuegos.entity.Videojuego;
 import com.coleccion.videojuegos.entity.Enums.Avance;
 import com.coleccion.videojuegos.repository.ProgresoRepository;
 import com.coleccion.videojuegos.web.requests.ProgresoRequest;
@@ -25,6 +26,10 @@ public class ProgresoService {
 		return progreso.isPresent() ? progreso.get() : null;
 	}
 
+	private Videojuego getV(Optional<Videojuego> videojuego){
+		return videojuego.isPresent() ? videojuego.get() : null;
+	}
+
 	public Progreso getProgreso(Integer id) {
 		Optional<Progreso> progreso = progresoRepository.findById(id);
 		return get(progreso);
@@ -39,7 +44,7 @@ public class ProgresoService {
 		progresoRepository.deleteById(id);
 	}
 
-	public Progreso newProgreso(Progreso progreso, Integer anyoJugado, Avance avance, float horasJugadas, Boolean completadoCien, float nota){
+	public Progreso newProgresoCompleto(Progreso progreso, Integer anyoJugado, Avance avance, float horasJugadas, Boolean completadoCien, float nota){
 		try{
 
 			progreso.setAnyoJugado(anyoJugado);
@@ -47,6 +52,24 @@ public class ProgresoService {
 			progreso.setHorasJugadas(horasJugadas);
 			progreso.setCompletadoCien(completadoCien);
 			progreso.setNota(nota);
+			
+			progresoRepository.save(progreso);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return progreso;
+	}
+
+	public Progreso newProgreso(Integer idVideojuego, ProgresoRequest pRequest){
+		Progreso progreso = new Progreso();
+		try{
+			progreso.setAnyoJugado(pRequest.getAnyoJugado());
+			progreso.setAvance(pRequest.getAvance());
+			progreso.setHorasJugadas(pRequest.getHorasJugadas());
+			progreso.setCompletadoCien(pRequest.getCompletadoCien());
+			progreso.setNota(pRequest.getNota());
+			Optional<Videojuego> videojuego = videojuegoRepository.findById(idVideojuego);
+			progreso.setVideojuego(getV(videojuego));
 			
 			progresoRepository.save(progreso);
 		} catch (Exception e) {

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.coleccion.videojuegos.entity.Soporte;
+import com.coleccion.videojuegos.entity.Videojuego;
 import com.coleccion.videojuegos.entity.Enums.Edicion;
 import com.coleccion.videojuegos.entity.Enums.Estado;
 import com.coleccion.videojuegos.entity.Enums.Region;
@@ -28,6 +29,10 @@ public class SoporteService {
 		return soporte.isPresent() ? soporte.get() : null;
 	}
 
+	private Videojuego getV(Optional<Videojuego> videojuego){
+		return videojuego.isPresent() ? videojuego.get() : null;
+	}
+
 	public Soporte getSoporte(Integer id) {
 		Optional<Soporte> soporte = soporteRepository.findById(id);
 		return get(soporte);
@@ -42,7 +47,7 @@ public class SoporteService {
 		soporteRepository.deleteById(id);
 	}
 
-	public Soporte newSoporte(Soporte soporte, Tipo tipo, Estado estado, Edicion edicion, Distribucion distribucion, Boolean precintado, Region region, Integer anyoSalidaDist, Tienda tienda){
+	public Soporte newSoporteCompleto(Soporte soporte, Tipo tipo, Estado estado, Edicion edicion, Distribucion distribucion, Boolean precintado, Region region, Integer anyoSalidaDist, Tienda tienda) throws Exception{
 		try{
 			soporte.setTipo(tipo);
 			soporte.setEstado(estado);
@@ -55,7 +60,28 @@ public class SoporteService {
 
 			soporteRepository.save(soporte);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new Exception(e);
+		}
+		return soporte;
+	}
+
+	public Soporte newSoporte(Integer idVideojuego, SoporteRequest sRequest) throws Exception{
+		Soporte soporte = new Soporte();
+		try{
+			soporte.setTipo(sRequest.getTipo());
+			soporte.setEstado(sRequest.getEstado());
+			soporte.setEdicion(sRequest.getEdicion());
+			soporte.setDistribucion(sRequest.getDistribucion());
+			soporte.setPrecintado(sRequest.getPrecintado());
+			soporte.setRegion(sRequest.getRegion());
+			soporte.setAnyoSalidaDist(sRequest.getAnyoSalidaDist());
+			soporte.setTienda(sRequest.getTienda());
+			Optional<Videojuego> videojuego = videojuegoRepository.findById(idVideojuego);
+			soporte.setVideojuego(getV(videojuego));
+
+			soporteRepository.save(soporte);
+		} catch (Exception e) {
+			throw new Exception(e);
 		}
 		return soporte;
 	}

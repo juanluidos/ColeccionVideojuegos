@@ -1,6 +1,7 @@
 package com.coleccion.videojuegos.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,13 +52,13 @@ public class VideojuegosService {
 			//si existen datos de progreso o soporte llamar a una funcion de crear progreso crear soporte:
 			if (vRequest.getAnyoJugado() != null || vRequest.getAvance() != null || vRequest.getHorasJugadas() != null || vRequest.getCompletadoCien() != null || vRequest.getNota() != null) {
 				// Código a ejecutar si al menos uno de los valores no es null			
-				Progreso nuevoProgreso = progresoService.newProgreso(new Progreso(), vRequest.getAnyoJugado(), vRequest.getAvance(), vRequest.getHorasJugadas().floatValue(), vRequest.getCompletadoCien(), vRequest.getNota().floatValue());
+				Progreso nuevoProgreso = progresoService.newProgresoCompleto(new Progreso(), vRequest.getAnyoJugado(), vRequest.getAvance(), vRequest.getHorasJugadas().floatValue(), vRequest.getCompletadoCien(), vRequest.getNota().floatValue());
 				videojuego.addProgreso(nuevoProgreso);
 			}
 			if(vRequest.getTipo() != null || vRequest.getEstado() != null || vRequest.getEdicion() != null || vRequest.getDistribucion() != null 
 				|| vRequest.getPrecintado() != null || vRequest.getRegion() != null || vRequest.getAnyoSalidaDist() != null || vRequest.getTienda() != null){
 					
-				Soporte nuevoSoporte = soporteService.newSoporte(new Soporte(), vRequest.getTipo(), vRequest.getEstado(), vRequest.getEdicion(), vRequest.getDistribucion(), vRequest.getPrecintado(), vRequest.getRegion(),  vRequest.getAnyoSalidaDist(), vRequest.getTienda());
+				Soporte nuevoSoporte = soporteService.newSoporteCompleto(new Soporte(), vRequest.getTipo(), vRequest.getEstado(), vRequest.getEdicion(), vRequest.getDistribucion(), vRequest.getPrecintado(), vRequest.getRegion(),  vRequest.getAnyoSalidaDist(), vRequest.getTienda());
 				videojuego.addSoporte(nuevoSoporte);
 
 			}
@@ -128,5 +129,24 @@ public class VideojuegosService {
 			throw new Exception("Error al eliminar el videojuego: " + e.getMessage());
 		}
 	}
+	
+	public List<Soporte> getSoporteListByVideojuego(Integer idVideojuego) {
+		Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
+		if (videojuegoOpt.isPresent()) {
+			Videojuego videojuego = videojuegoOpt.get();
+			return videojuego.getSoporte();  // Retorna la lista de soportes directamente
+		} else {
+			return new ArrayList<>();  // Retorna una lista vacía si no se encuentra el videojuego
+		}
+	}
 
+	public List<Progreso> getProgresoListByVideojuego(Integer idVideojuego) {
+		Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
+		if(videojuegoOpt.isPresent()){
+			Videojuego videojuego = videojuegoOpt.get();
+			return videojuego.getProgreso();
+		}else{
+			return new ArrayList<>();
+		}
+	}
 }
