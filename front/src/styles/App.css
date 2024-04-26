@@ -1,0 +1,12 @@
+.link-dark {
+	text-decoration: none; /* quita el subrayado */
+  }
+  
+.link-dark:hover,
+.link-dark:focus {
+	text-decoration:underline; /* opcional: añade subrayado al hacer hover o focus */
+  }
+
+.nav-item {
+	margin-bottom: 10px;
+  }
