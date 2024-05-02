@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@PreAuthorize("denyAll()")
+// @PreAuthorize("denyAll()")
 @CrossOrigin(origins = { "*" })
 public class APIController {
 
@@ -46,29 +46,32 @@ public class APIController {
 	/** Videojuegos **/
 	
 	@GetMapping("/api/v1/videojuegos")
+	// @PreAuthorize("hasAuthority('READ')")
 	public List<Videojuego> getVideojuegos() throws Exception {
 		return videojuegosService.listAllVideojuegos();
 	}
 
+	// @PreAuthorize("hasAuthority('READ')")
 	@GetMapping("/api/v1/videojuegos/{id}")
 	public Videojuego getVideojuego(@PathVariable("id") Integer id) throws Exception {
 		return videojuegosService.getVideojuego(id);
 	}
-
+	// @PreAuthorize("hasAuthority('CREATE')")
 	@PostMapping("/api/v1/videojuegos/new")
 	public Videojuego crearVideojuego (@RequestBody VideojuegoCompletoRequest vRequest) throws Exception{
 
 		return videojuegosService.newVideojuego(vRequest);
 
 	}
-	//para updatear solo el apartado videojuego 
+	//para updatear solo el apartado videojuego
+	// @PreAuthorize("hasAuthority('UPDATE')")
 	@PutMapping("/api/v1/videojuegos/{id}/change")
 	public Videojuego editarVideojuego (@PathVariable("id") Integer id, @RequestBody VideojuegoRequest vRequest) throws Exception {
 		
 		return videojuegosService.updateVideojuego(id, vRequest);
 	
 	}
-
+	@PreAuthorize("hasAuthority('DELETE')")
 	@DeleteMapping("/api/v1/videojuegos/{id}/delete")
 	public ResponseEntity<String> deleteVideojuego(@PathVariable("id") Integer id) throws Exception {
 		videojuegosService.deleteVideojuego(id);

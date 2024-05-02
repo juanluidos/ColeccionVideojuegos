@@ -10,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
@@ -21,7 +22,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="USUARIOS")
+@Table(name="users")
 public class Usuario {
 
 	@Id
@@ -46,7 +47,12 @@ public class Usuario {
 	private boolean credentialNoExpired;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "user_roles")
+	@JoinTable(
+		name = "user_roles", 
+		joinColumns = @JoinColumn(name="user_id"),  // Columna en la tabla de unión que se refiere a la entidad Usuario
+		inverseJoinColumns = @JoinColumn(name="role_id")  // Columna en la tabla de unión que se refiere a la entidad Role
+	)
+	@Builder.Default
 	private Set<Role> roles = new HashSet<>();
 
 	

@@ -1,6 +1,6 @@
 package com.coleccion.videojuegos.entity.Enums;
 
-public enum Role {
+public enum RoleEnum {
 	ADMIN,
 	USER
 }
