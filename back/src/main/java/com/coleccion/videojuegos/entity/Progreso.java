@@ -5,7 +5,13 @@ import com.coleccion.videojuegos.entity.Enums.Avance;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="PROGRESO")
 public class Progreso {
     @Id
@@ -27,67 +33,5 @@ public class Progreso {
     @ManyToOne
     @JoinColumn(name = "ID_VIDEOJUEGO")
     private Videojuego videojuego;
-
-	public Integer getId() {
-		return this.id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Integer getAnyoJugado() {
-		return this.anyoJugado;
-	}
-
-	public void setAnyoJugado(Integer anyoJugado) {
-		this.anyoJugado = anyoJugado;
-	}
-
-	public Avance getAvance() {
-		return this.avance;
-	}
-
-	public void setAvance(Avance avance) {
-		this.avance = avance;
-	}
-
-	public Float getHorasJugadas() {
-		return this.horasJugadas;
-	}
-
-	public void setHorasJugadas(Float horasJugadas) {
-		this.horasJugadas = horasJugadas;
-	}
-
-	public Float getNota() {
-		return this.nota;
-	}
-
-	public void setNota(Float nota) {
-		this.nota = nota;
-	}
-
-
-	public Boolean isCompletadoCien() {
-		return this.completadoCien;
-	}
-
-	public Boolean getCompletadoCien() {
-		return this.completadoCien;
-	}
-
-	public void setCompletadoCien(boolean completadoCien) {
-		this.completadoCien = completadoCien;
-	}
-
-	public Videojuego getVideojuego() {
-		return this.videojuego;
-	}
-
-	public void setVideojuego(Videojuego videojuego) {
-		this.videojuego = videojuego;
-	}
-
 
 }

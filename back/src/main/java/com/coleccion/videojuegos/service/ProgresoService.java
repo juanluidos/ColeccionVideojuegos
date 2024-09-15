@@ -107,7 +107,7 @@ public class ProgresoService {
 		}
 	
 		// Compara y actualiza si se ha completado al cien si es diferente
-		if (pRequest.getCompletadoCien() != null && !pRequest.getCompletadoCien().equals(progreso.isCompletadoCien())) {
+		if (pRequest.getCompletadoCien() != null && !pRequest.getCompletadoCien().equals(progreso.getCompletadoCien())) {
 			progreso.setCompletadoCien(pRequest.getCompletadoCien());
 			needUpdate = true;
 		}
