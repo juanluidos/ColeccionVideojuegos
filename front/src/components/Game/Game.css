@@ -1,0 +1,49 @@
+.cube {
+    width: fit-content;
+    display: flex;
+    position: relative;
+    transition: all 0.5s ease; /* Transición de la posición */
+    cursor: pointer;
+    border: 3px black solid;
+  }
+  
+
+    .hover{
+        transform: scale(1.3);
+        z-index: 1000;
+    }
+
+  .cube.animated {
+    z-index: 1000;
+  }
+  
+  .front {
+    width: 100px;
+    height: 200px;
+    background-color: red;
+    transform: rotateY(0deg);
+    transform-origin: right;
+    transition: all 1s ease; /* Transición de la cara del cubo */
+  }
+  
+  .left {
+    height: 200px;
+    width: 0px;
+    background-color: yellow;
+    transform: rotateY(-90deg);
+    transform-origin: left;
+    transition: all 1s ease; /* Transición de la cara del cubo */
+  }
+  
+  .front.animated {
+    width: 0px;
+    height: 50vh;
+    transform: rotateY(-90deg); /* Animación de la cara frontal */
+  }
+  
+  .left.animated {
+    width: 500px;
+    height: 60vh;
+    transform: rotateY(0deg); /* Animación de la cara lateral */
+  }
+  

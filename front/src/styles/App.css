@@ -10,3 +10,8 @@
 .nav-item {
 	margin-bottom: 10px;
   }
+  .libreria{
+    display: grid;
+    grid-template-columns: repeat(12, auto );
+    gap: 3px;
+  }
