@@ -2,6 +2,7 @@ import React from 'react';
 import "../styles/App.css"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from '../components/Sidebar';  // Asegúrate de que la ruta sea correcta
+import Game from '../components/Game/Game'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <div className="p-3">
               <h2>Contenido Principal</h2>
               <p>Aquí va el contenido único de cada página.</p>
+			  <Game title = "Juego de prueba" platform = "ps"></Game>
             </div>
           </div>
         </div>

@@ -1,0 +1,62 @@
+.gameBody{
+	display: flex;
+}
+.game {
+    /* Estilos para el componente Game */
+	display: grid;
+	grid-column: 15% 85%;
+	height: 30vh;
+	width: 3vw;
+	max-height: 50vh;
+	background-color: aqua;
+	transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Suavidad mejorada */
+}
+.ps {
+	color: red;
+	background-color: #0066CC;
+	border-radius: 3% 3% 0% 0%;
+	border: 1px solid black;
+	border-bottom: none;
+	
+}
+.details{
+	background-color: whitesmoke;
+	display: flex;             /* Activa Flexbox */
+    justify-content: center;   /* Centra horizontalmente */
+    align-items: center;       /* Hace que el contenedor ocupe toda la altura de la ventana */
+    text-align: center; 
+	writing-mode: vertical-rl;
+	border-radius: 0% 0% 3% 3%;
+	border: 1px solid black;
+	border-top: none;
+}
+.game:hover{
+	transform: scale(1.3)
+}
+
+.frontal{
+	width: 100px;
+	height: 200px;
+	background-color: blue;
+	transform-origin: left center;
+	transition: transform 1s ease;
+}
+.rigth{
+	width: 100px;
+	height: 200px;
+	background-color: red;
+	transform-origin: left center;
+	transition: transform 1s ease;
+	
+	transform: rotateY(90deg);
+
+}
+
+.rigth.clicked{
+	transform: rotateY(-90deg);
+	background-color: rebeccapurple;
+}
+.frontal.clicked{
+	transform: rotateY(-90deg);
+	background-color: aquamarine;
+}

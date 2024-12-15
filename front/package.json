@@ -36,5 +36,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "inquirer": "^8.2.4",
+    "plop": "^2.7.4"
   }
 }
