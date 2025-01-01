@@ -11,7 +11,8 @@
 	margin-bottom: 10px;
   }
   .libreria{
-    display: grid;
-    grid-template-columns: repeat(12, auto );
-    gap: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end ;
+    gap: 3px 10px;
   }
