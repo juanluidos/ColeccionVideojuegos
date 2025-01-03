@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "../styles/App.css"
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Game from '../components/Game/Game'
@@ -9,6 +9,8 @@ import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 
 function App() {
+  
+  
   const list = [1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 11, 1]
   return (
     <div>
@@ -42,7 +44,7 @@ function App() {
                   } else if (index % 2 === 0) {
                     return <Game key={index} platform="ds" title="Inazuma Eleven 2" />;
                   } else {
-                    return <Game key={index} platform="ps" title="FC 25" />;
+                    return <Game key={index} platform="ps" title="FC 25"  />;
                   }
                 })}
               </div>
