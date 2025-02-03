@@ -71,7 +71,7 @@ const GameInfo = ({ game }) => {
 					</div>
 				</div>
 				<Modal
-					title="Detalles del soporte"
+					title="Progreso del juego"
 					cancelButtonProps={{ style: { display: 'none' } }}
 					open={isModalOpen[0]}
 					centered={true}

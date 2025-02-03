@@ -13,27 +13,27 @@ const Game = ({ platform, title }) => {
   const [positionini, setPositionini] = useState({}); // Estilos dinámicos
   const [isReturning, setIsReturning] = useState(false); // Estado para saber si estamos volviendo al grid
   const [isFlipped, setIsFlipped] = useState(false);
-  
+
   const game = {
-	nombre: "God of War",
-	precio: 30.56,
-	fechaLanzamiento: "20/04/2018",
-	plataforma: "PS4",
-	genero: "Aventuras",
-	progreso: [
-		"Backlog", "Jugado", "Completado"
-	],
-	soporte: {
-		id:0,
-		tipo : "Fisico",
-		estado: "Bueno",
-		edicion:"Coleccionista",
-		distribucion:"LGR",
-		precintado: true,
-		region:"PAL_ESP",
-		anyoSalidaDist: 2018,
-		tienda:"Amazon"
-	}
+    nombre: "God of War",
+    precio: 30.56,
+    fechaLanzamiento: "20/04/2018",
+    plataforma: "PS4",
+    genero: "Aventuras",
+    progreso: [
+      "Backlog", "Jugado", "Completado"
+    ],
+    soporte: {
+      id: 0,
+      tipo: "Fisico",
+      estado: "Bueno",
+      edicion: "Coleccionista",
+      distribucion: "LGR",
+      precintado: true,
+      region: "PAL_ESP",
+      anyoSalidaDist: 2018,
+      tienda: "Amazon"
+    }
 
   }
   const handleCardClick = () => {
@@ -215,15 +215,44 @@ const Game = ({ platform, title }) => {
 
           </div> */}
           <div className="card-container" onClick={handleCardClick}>
-            <div className={`card ${isFlipped ? "flipped" : ""}`}>
+            {/* <div className={`card ${isFlipped ? "flipped" : ""}`}>
               <div className="frontcard">
                 <img src={logo} alt="imagen del juego" />
               </div>
               <div className="back">
                 <GameInfo game={game}></GameInfo>
               </div>
+            </div> */}
+
+            <div className="book" onClick={handleCardClick}>
+              {/* Cara 1 (se oculta después del giro) */}
+              <div className={`page frontCard ${isFlipped ? "flipped" : ""}`}>
+                <img src={logo} alt="imagen del juego" />
+                
+              </div>
+
+              {/* Cara 2 (Gira) */}
+              <div className={`page middleCard ${isFlipped ? "flipped" : ""}`}>
+                <GameInfo game={game}></GameInfo>
+              </div>
+
+              {/* Cara 3 (Siempre visible y encima de la cara 1) */}
+              <div className="page backCard">
+                <div className="disk">
+                  <img src={logoSwitch} alt="Logo" />
+                  <div className="circle"></div>
+                </div>
+              </div>
             </div>
+
+
           </div>
+          {/* {isFlipped && (
+            <div className="disk">
+              <img src={logoSwitch} alt="Logo" />
+              <div className="circle"></div>
+            </div>
+          )} */}
 
           <div className="cross" onClick={handleAnimationToggle}>
             <FontAwesomeIcon icon="fa-solid fa-x" />
