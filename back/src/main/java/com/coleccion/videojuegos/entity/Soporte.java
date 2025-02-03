@@ -10,6 +10,7 @@ import com.coleccion.videojuegos.entity.Enums.Tipo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
+import jakarta.websocket.OnClose;
 
 @Entity
 @Table(name="SOPORTE")
@@ -129,4 +130,8 @@ public class Soporte {
 		this.tienda = tienda;
 	}
 	
+	@Override
+	public String toString(){
+		return this.tipo + " + " +this.estado;
+	}
 }

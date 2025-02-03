@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import logoSwitch from '../../assets/images/logo-switch.png'
 import logoDS from '../../assets/images/logo-ds.png'
 import logo from '../../assets/images/logo192.png'
+import GameInfo from '../GameInfo/GameInfo.jsx'
 
 const Game = ({ platform, title }) => {
   const [isAnimating, setIsAnimating] = useState(false); // Estado para iniciar y detener la animación
@@ -12,7 +13,29 @@ const Game = ({ platform, title }) => {
   const [positionini, setPositionini] = useState({}); // Estilos dinámicos
   const [isReturning, setIsReturning] = useState(false); // Estado para saber si estamos volviendo al grid
   const [isFlipped, setIsFlipped] = useState(false);
+  
+  const game = {
+	nombre: "God of War",
+	precio: 30.56,
+	fechaLanzamiento: "20/04/2018",
+	plataforma: "PS4",
+	genero: "Aventuras",
+	progreso: [
+		"Backlog", "Jugado", "Completado"
+	],
+	soporte: {
+		id:0,
+		tipo : "Fisico",
+		estado: "Bueno",
+		edicion:"Coleccionista",
+		distribucion:"LGR",
+		precintado: true,
+		region:"PAL_ESP",
+		anyoSalidaDist: 2018,
+		tienda:"Amazon"
+	}
 
+  }
   const handleCardClick = () => {
     setIsFlipped(!isFlipped);
   };
@@ -197,7 +220,7 @@ const Game = ({ platform, title }) => {
                 <img src={logo} alt="imagen del juego" />
               </div>
               <div className="back">
-                Contenido de la parte trasera
+                <GameInfo game={game}></GameInfo>
               </div>
             </div>
           </div>
