@@ -1,19 +1,10 @@
 package com.coleccion.videojuegos.entity;
 
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import java.util.ArrayList;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Setter
@@ -29,9 +20,13 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String username;
 
+	@Column(unique = true, nullable = false)
+    private String email;
+
+	@Column(nullable = false)
 	private String password;
 
 	@Column(name="is_enabled")
@@ -49,11 +44,14 @@ public class Usuario {
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
 		name = "user_roles", 
-		joinColumns = @JoinColumn(name="user_id"),  // Columna en la tabla de unión que se refiere a la entidad Usuario
-		inverseJoinColumns = @JoinColumn(name="role_id")  // Columna en la tabla de unión que se refiere a la entidad Role
+		joinColumns = @JoinColumn(name="user_id"),  
+		inverseJoinColumns = @JoinColumn(name="role_id")  
 	)
 	@Builder.Default
 	private Set<Role> roles = new HashSet<>();
 
-	
+	// Relación con Videojuego: Un usuario puede registrar varios videojuegos
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Videojuego> videojuegos = new ArrayList<>();
 }

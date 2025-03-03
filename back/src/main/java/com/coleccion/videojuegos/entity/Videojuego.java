@@ -3,11 +3,17 @@ package com.coleccion.videojuegos.entity;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.coleccion.videojuegos.entity.Enums.Genero;
 import com.coleccion.videojuegos.entity.Enums.Plataforma;
 
 import jakarta.persistence.*;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name="VIDEOJUEGO")
 public class Videojuego {
@@ -15,98 +21,47 @@ public class Videojuego {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Integer id;
-	@Column(name = "NOMBRE")
+
+    @Column(name = "NOMBRE", nullable = false)
     private String nombre;
-	@Column(name="PRECIO")
-	private Float precio;
-	@Column(name="FECHA_LANZAMIENTO")
-	private Date fechaLanzamiento;
-	@Column(name="FECHA_COMPRA")
-	private Date fechaCompra;
-	@Enumerated(EnumType.STRING)
-	@Column(name="PLATAFORMA")
-	private Plataforma plataforma;
-	@Enumerated(EnumType.STRING)
-	@Column(name="GENERO")
-	private Genero genero;
-	@OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL)
-	@Column(name="PROGRESO")
-	private List<Progreso> progreso = new ArrayList<>();
-	@OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL)
-	@Column(name="SOPORTE")
-	private List<Soporte> soporte = new ArrayList<>();
 
-	public Integer getId() {
-		return this.id;
-	}
+    @Column(name="PRECIO")
+    private Float precio;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    @Column(name="FECHA_LANZAMIENTO")
+    private Date fechaLanzamiento;
 
-	public String getNombre() {
-		return this.nombre;
-	}
+    @Column(name="FECHA_COMPRA")
+    private Date fechaCompra;
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    @Enumerated(EnumType.STRING)
+    @Column(name="PLATAFORMA")
+    private Plataforma plataforma;
 
-	public Float getPrecio() {
-		return this.precio;
-	}
+    @Enumerated(EnumType.STRING)
+    @Column(name="GENERO")
+    private Genero genero;
 
-	public void setPrecio(Float precio) {
-		this.precio = precio;
-	}
+    @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Progreso> progreso = new ArrayList<>();
 
-	public Date getFechaLanzamiento() {
-		return this.fechaLanzamiento;
-	}
+    @OneToMany(mappedBy = "videojuego", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Soporte> soporte = new ArrayList<>();
 
-	public void setFechaLanzamiento(Date fechaLanzamiento) {
-		this.fechaLanzamiento = fechaLanzamiento;
-	}
+    // Relación con Usuario
+    @ManyToOne
+    @JoinColumn(name = "USUARIO_ID", nullable = false)
+    private Usuario usuario;
 
-	public Date getFechaCompra() {
-		return this.fechaCompra;
-	}
-
-	public void setFechaCompra(Date fechaCompra) {
-		this.fechaCompra = fechaCompra;
-	}
-
-	public Plataforma getPlataforma() {
-		return this.plataforma;
-	}
-
-	public void setPlataforma(Plataforma plataforma) {
-		this.plataforma = plataforma;
-	}
-
-	public Genero getGenero() {
-		return this.genero;
-	}
-
-	public void setGenero(Genero genero) {
-		this.genero = genero;
-	}
-
-	public List<Progreso> getProgreso() {
-		return this.progreso;
-	}
-
-	public void addProgreso(Progreso elementoProgreso) {
-		this.progreso.add(elementoProgreso);
-		elementoProgreso.setVideojuego(this);
-	}
-
-	public List<Soporte> getSoporte() {
-		return this.soporte;
-	}
+    public void addProgreso(Progreso elementoProgreso) {
+        this.progreso.add(elementoProgreso);
+        elementoProgreso.setVideojuego(this);
+    }
 
     public void addSoporte(Soporte elementoSoporte) {
         this.soporte.add(elementoSoporte);
-        elementoSoporte.setVideojuego(this); // Asegúrate de establecer la relación bidireccional si es necesario
+        elementoSoporte.setVideojuego(this);
     }
 }

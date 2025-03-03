@@ -1,152 +1,109 @@
 package com.coleccion.videojuegos.service;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.coleccion.videojuegos.entity.Progreso;
 import com.coleccion.videojuegos.entity.Soporte;
 import com.coleccion.videojuegos.entity.Videojuego;
+import com.coleccion.videojuegos.entity.Usuario;
 import com.coleccion.videojuegos.repository.VideojuegoRepository;
 import com.coleccion.videojuegos.web.requests.VideojuegoCompletoRequest;
 import com.coleccion.videojuegos.web.requests.VideojuegoRequest;
 
 import jakarta.transaction.Transactional;
+
 @Service
 public class VideojuegosService {
-	@Autowired
-	private VideojuegoRepository videojuegoRepository;
-	@Autowired
-	private SoporteService soporteService;
-	@Autowired
-	private ProgresoService progresoService;
-	
-	private Videojuego get(Optional<Videojuego> videojuego){
-		return videojuego.isPresent() ? videojuego.get() : null;
-	}
+    @Autowired
+    private VideojuegoRepository videojuegoRepository;
 
-	public List<Videojuego> listAllVideojuegos() {
-        return (List<Videojuego>) videojuegoRepository.findAll();
+    @Autowired
+    private SoporteService soporteService;
+
+    @Autowired
+    private ProgresoService progresoService;
+
+    private Videojuego get(Optional<Videojuego> videojuego) {
+        return videojuego.orElse(null);
     }
 
-	public Videojuego getVideojuego(Integer id) {
-		Optional<Videojuego> videojuego = videojuegoRepository.findById(id);
-		return get(videojuego);
-	}
+    /**   Obtener todos los videojuegos **/
+    public List<Videojuego> listAllVideojuegos() {
+        return videojuegoRepository.findAll();
+    }
 
-	@Transactional
-	public Videojuego newVideojuego(VideojuegoCompletoRequest vRequest) throws Exception{
-		Videojuego videojuego = new Videojuego();
-		try {
+    /**   Obtener videojuego por ID **/
+    public Videojuego getVideojuego(Integer id) {
+        return get(videojuegoRepository.findById(id));
+    }
+
+    /**   Obtener lista de videojuegos de un usuario **/
+    public List<Videojuego> getVideojuegosByUsuario(Usuario usuario) {
+        return videojuegoRepository.findByUsuario(usuario).orElse(List.of());
+    }
+
+	public Videojuego newVideojuego(VideojuegoCompletoRequest vRequest) {
+		Videojuego videojuego = Videojuego.builder()
+				.nombre(vRequest.getNombre())
+				.precio(vRequest.getPrecio())
+				.fechaLanzamiento(vRequest.getFechaLanzamiento())
+				.fechaCompra(vRequest.getFechaCompra())
+				.plataforma(vRequest.getPlataforma())
+				.genero(vRequest.getGenero())
+				.build();
+	
+		return videojuegoRepository.save(videojuego);
+	}
+	
+	public Videojuego updateVideojuego(Integer id, VideojuegoRequest vRequest) {
+		Optional<Videojuego> videojuegoOptional = videojuegoRepository.findById(id);
+		if (videojuegoOptional.isEmpty()) {
+			throw new RuntimeException("No existe dicho videojuego en la base de datos.");
+		}
+	
+		Videojuego videojuego = videojuegoOptional.get();
+	
+		// Actualizar solo si los valores no son nulos y han cambiado
+		if (vRequest.getNombre() != null) {
 			videojuego.setNombre(vRequest.getNombre());
+		}
+		if (vRequest.getPrecio() != null) {
 			videojuego.setPrecio(vRequest.getPrecio());
+		}
+		if (vRequest.getFechaLanzamiento() != null) {
 			videojuego.setFechaLanzamiento(vRequest.getFechaLanzamiento());
+		}
+		if (vRequest.getFechaCompra() != null) {
 			videojuego.setFechaCompra(vRequest.getFechaCompra());
+		}
+		if (vRequest.getPlataforma() != null) {
 			videojuego.setPlataforma(vRequest.getPlataforma());
+		}
+		if (vRequest.getGenero() != null) {
 			videojuego.setGenero(vRequest.getGenero());
-
-			//si existen datos de progreso o soporte llamar a una funcion de crear progreso crear soporte:
-			if (vRequest.getAnyoJugado() != null || vRequest.getAvance() != null || vRequest.getHorasJugadas() != null || vRequest.getCompletadoCien() != null || vRequest.getNota() != null) {
-				// Código a ejecutar si al menos uno de los valores no es null			
-				Progreso nuevoProgreso = progresoService.newProgresoCompleto(new Progreso(), vRequest.getAnyoJugado(), vRequest.getAvance(), vRequest.getHorasJugadas().floatValue(), vRequest.getCompletadoCien(), vRequest.getNota().floatValue());
-				videojuego.addProgreso(nuevoProgreso);
-			}
-			if(vRequest.getTipo() != null || vRequest.getEstado() != null || vRequest.getEdicion() != null || vRequest.getDistribucion() != null 
-				|| vRequest.getPrecintado() != null || vRequest.getRegion() != null || vRequest.getAnyoSalidaDist() != null || vRequest.getTienda() != null){
-					
-				Soporte nuevoSoporte = soporteService.newSoporteCompleto(new Soporte(), vRequest.getTipo(), vRequest.getEstado(), vRequest.getEdicion(), vRequest.getDistribucion(), vRequest.getPrecintado(), vRequest.getRegion(),  vRequest.getAnyoSalidaDist(), vRequest.getTienda());
-				videojuego.addSoporte(nuevoSoporte);
-
-			}
-			videojuegoRepository.save(videojuego);
 		}
-		catch(Exception e){
-			throw new Exception("Error al crear el videojuego: " + e.getMessage());
-		}
-		return videojuego;
-	}
-
-	//para updatear solo el apartado videojuego 
-	public Videojuego updateVideojuego(Integer id, VideojuegoRequest vRequest) throws Exception{
-		try {
-			Optional<Videojuego> videojuegoOpcional = videojuegoRepository.findById(id);
-			if (videojuegoOpcional.isPresent()) {
-				Videojuego videojuego = videojuegoOpcional.get();
-				boolean needUpdate = false;
 	
-				// Compara y establece el nombre si es diferente y no nulo
-				if (vRequest.getNombre() != null && !vRequest.getNombre().equals(videojuego.getNombre())) {
-					videojuego.setNombre(vRequest.getNombre());
-					needUpdate = true;
-				}
-				if (vRequest.getPrecio() != null && !vRequest.getPrecio().equals(videojuego.getPrecio())) {
-					videojuego.setPrecio(vRequest.getPrecio());
-					needUpdate = true;
-				}
-				if (vRequest.getFechaLanzamiento() != null && !vRequest.getFechaLanzamiento().equals(videojuego.getFechaLanzamiento())) {
-					videojuego.setFechaLanzamiento(vRequest.getFechaLanzamiento());
-					needUpdate = true;
-				}
-				if (vRequest.getFechaCompra() != null && !vRequest.getFechaCompra().equals(videojuego.getFechaCompra())) {
-					videojuego.setFechaCompra(vRequest.getFechaCompra());
-					needUpdate = true;
-				}
-				if (vRequest.getPlataforma() != null && !vRequest.getPlataforma().equals(videojuego.getPlataforma())) {
-					videojuego.setPlataforma(vRequest.getPlataforma());
-					needUpdate = true;
-				}
-				if (vRequest.getGenero() != null && !vRequest.getGenero().equals(videojuego.getGenero())) {
-					videojuego.setGenero(vRequest.getGenero());
-					needUpdate = true;
-				}
-	
-				// Si hay al menos un cambio, actualiza la entidad
-				if (needUpdate) {
-					videojuegoRepository.save(videojuego);
-				} else{
-					throw new Exception("No hay ningún cambio a realizar");
-				}
-	
-				return videojuego;
-			} else {
-				throw new Exception("No existe dicho videojuego en la base de datos");
-			}
-			
-		} catch(Exception e){
-			throw new Exception("Error al actualizar el videojuego: " + e.getMessage());
-		}
-	}
-
-	public void deleteVideojuego(Integer id) throws Exception{
-		try{
-			videojuegoRepository.deleteById(id);
-		}
-		catch(Exception e){
-			throw new Exception("Error al eliminar el videojuego: " + e.getMessage());
-		}
+		return videojuegoRepository.save(videojuego);
 	}
 	
-	public List<Soporte> getSoporteListByVideojuego(Integer idVideojuego) {
-		Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
-		if (videojuegoOpt.isPresent()) {
-			Videojuego videojuego = videojuegoOpt.get();
-			return videojuego.getSoporte();  // Retorna la lista de soportes directamente
-		} else {
-			return new ArrayList<>();  // Retorna una lista vacía si no se encuentra el videojuego
+	public void deleteVideojuego(Integer id) {
+		if (!videojuegoRepository.existsById(id)) {
+			throw new RuntimeException("El videojuego con ID " + id + " no existe.");
 		}
-	}
+		videojuegoRepository.deleteById(id);
+	}	
 
-	public List<Progreso> getProgresoListByVideojuego(Integer idVideojuego) {
-		Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
-		if(videojuegoOpt.isPresent()){
-			Videojuego videojuego = videojuegoOpt.get();
-			return videojuego.getProgreso();
-		}else{
-			return new ArrayList<>();
-		}
-	}
+    /**   Obtener progresos de un videojuego **/
+    public List<Progreso> getProgresoListByVideojuego(Integer idVideojuego) {
+        Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
+        return videojuegoOpt.map(Videojuego::getProgreso).orElse(List.of());
+    }
+
+    /**   Obtener soportes de un videojuego **/
+    public List<Soporte> getSoporteListByVideojuego(Integer idVideojuego) {
+        Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
+        return videojuegoOpt.map(Videojuego::getSoporte).orElse(List.of());
+    }
 }

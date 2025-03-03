@@ -2,141 +2,97 @@ package com.coleccion.videojuegos.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.coleccion.videojuegos.entity.Soporte;
 import com.coleccion.videojuegos.entity.Videojuego;
-import com.coleccion.videojuegos.entity.Enums.Edicion;
-import com.coleccion.videojuegos.entity.Enums.Estado;
-import com.coleccion.videojuegos.entity.Enums.Region;
-import com.coleccion.videojuegos.entity.Enums.Tienda;
-import com.coleccion.videojuegos.entity.Enums.Tipo;
-import com.coleccion.videojuegos.entity.Enums.Distribucion;
 import com.coleccion.videojuegos.repository.SoporteRepository;
 import com.coleccion.videojuegos.repository.VideojuegoRepository;
 import com.coleccion.videojuegos.web.requests.SoporteRequest;
+
 @Service
 public class SoporteService {
-	@Autowired
-	private SoporteRepository soporteRepository;
-	
-	@Autowired
+    @Autowired
+    private SoporteRepository soporteRepository;
+
+    @Autowired
     private VideojuegoRepository videojuegoRepository;
 
-	private Soporte get(Optional<Soporte> soporte){
-		return soporte.isPresent() ? soporte.get() : null;
-	}
+    public Soporte getSoporte(Integer id) {
+        return soporteRepository.findById(id).orElse(null);
+    }
 
-	private Videojuego getV(Optional<Videojuego> videojuego){
-		return videojuego.isPresent() ? videojuego.get() : null;
-	}
+    public List<Soporte> getSoporteListByVideojuego(Integer idVideojuego) {
+        Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
+        return videojuegoOpt.map(Videojuego::getSoporte).orElse(new ArrayList<>());
+    }
 
-	public Soporte getSoporte(Integer id) {
-		Optional<Soporte> soporte = soporteRepository.findById(id);
-		return get(soporte);
-	}
-	
-	public List<Soporte> getSoporteListByVideojuego(Integer id) {
-		Optional<List<Soporte>> soporteList = videojuegoRepository.findSoporteListById(id);
-		return  soporteList.isPresent() ? soporteList.get() : null;
-	}
+    public Soporte newSoporte(Integer idVideojuego, SoporteRequest sRequest) {
+        Optional<Videojuego> videojuegoOpt = videojuegoRepository.findById(idVideojuego);
+        if (videojuegoOpt.isEmpty()) {
+            throw new RuntimeException("El videojuego con ID " + idVideojuego + " no existe.");
+        }
 
-	public void deleteSoporte(Integer id){
+        Soporte soporte = Soporte.builder()
+                .tipo(sRequest.getTipo())
+                .estado(sRequest.getEstado())
+                .edicion(sRequest.getEdicion())
+                .distribucion(sRequest.getDistribucion())
+                .precintado(sRequest.getPrecintado())
+                .region(sRequest.getRegion())
+                .anyoSalidaDist(sRequest.getAnyoSalidaDist())
+                .tienda(sRequest.getTienda())
+                .videojuego(videojuegoOpt.get())
+                .build();
+
+        return soporteRepository.save(soporte);
+    }
+
+	public void deleteSoporte(Integer id) {
+		if (!soporteRepository.existsById(id)) {
+			throw new RuntimeException("El soporte con ID " + id + " no existe.");
+		}
 		soporteRepository.deleteById(id);
 	}
-
-	public Soporte newSoporteCompleto(Soporte soporte, Tipo tipo, Estado estado, Edicion edicion, Distribucion distribucion, Boolean precintado, Region region, Integer anyoSalidaDist, Tienda tienda) throws Exception{
-		try{
-			soporte.setTipo(tipo);
-			soporte.setEstado(estado);
-			soporte.setEdicion(edicion);
-			soporte.setDistribucion(distribucion);
-			soporte.setPrecintado(precintado);
-			soporte.setRegion(region);
-			soporte.setAnyoSalidaDist(anyoSalidaDist);
-			soporte.setTienda(tienda);
-
-			soporteRepository.save(soporte);
-		} catch (Exception e) {
-			throw new Exception(e);
-		}
-		return soporte;
-	}
-
-	public Soporte newSoporte(Integer idVideojuego, SoporteRequest sRequest) throws Exception{
-		Soporte soporte = new Soporte();
-		try{
-			soporte.setTipo(sRequest.getTipo());
-			soporte.setEstado(sRequest.getEstado());
-			soporte.setEdicion(sRequest.getEdicion());
-			soporte.setDistribucion(sRequest.getDistribucion());
-			soporte.setPrecintado(sRequest.getPrecintado());
-			soporte.setRegion(sRequest.getRegion());
-			soporte.setAnyoSalidaDist(sRequest.getAnyoSalidaDist());
-			soporte.setTienda(sRequest.getTienda());
-			Optional<Videojuego> videojuego = videojuegoRepository.findById(idVideojuego);
-			soporte.setVideojuego(getV(videojuego));
-
-			soporteRepository.save(soporte);
-		} catch (Exception e) {
-			throw new Exception(e);
-		}
-		return soporte;
-	}
-
 	
-	public Soporte updateSoporte(Integer idVideojuego, Integer idSoporte, SoporteRequest sRequest) throws Exception {
-		
-		Optional<Soporte> soporteOptional = soporteRepository.findById(idVideojuego);
-		if (!soporteOptional.isPresent()) {
-			throw new Exception("Soporte no encontrado con el ID videojuego: " + idVideojuego);
+	public Soporte updateSoporte(Integer idVideojuego, Integer idSoporte, SoporteRequest sRequest) {
+		Optional<Soporte> soporteOptional = soporteRepository.findById(idSoporte);
+		if (soporteOptional.isEmpty()) {
+			throw new RuntimeException("Soporte no encontrado con el ID: " + idSoporte);
 		}
 	
 		Soporte soporte = soporteOptional.get();
-		boolean needUpdate = false;
 	
-		// Compara y actualiza el tipo si es necesario
-		if (sRequest.getTipo() != null && !sRequest.getTipo().equals(soporte.getTipo())) {
+		// Actualizar solo si los valores no son nulos y han cambiado
+		if (sRequest.getTipo() != null) {
 			soporte.setTipo(sRequest.getTipo());
-			needUpdate = true;
 		}
-		if (sRequest.getEstado() != null && !sRequest.getEstado().equals(soporte.getEstado())) {
+		if (sRequest.getEstado() != null) {
 			soporte.setEstado(sRequest.getEstado());
-			needUpdate = true;
 		}
-		if (sRequest.getEdicion() != null && !sRequest.getEdicion().equals(soporte.getEdicion())) {
+		if (sRequest.getEdicion() != null) {
 			soporte.setEdicion(sRequest.getEdicion());
-			needUpdate = true;
 		}
-		if (sRequest.getDistribucion() != null && !sRequest.getDistribucion().equals(soporte.getDistribucion())) {
+		if (sRequest.getDistribucion() != null) {
 			soporte.setDistribucion(sRequest.getDistribucion());
-			needUpdate = true;
 		}
-		if (sRequest.getPrecintado() != null && !sRequest.getPrecintado().equals(soporte.getPrecintado())) {
+		if (sRequest.getPrecintado() != null) {
 			soporte.setPrecintado(sRequest.getPrecintado());
-			needUpdate = true;
 		}
-		if (sRequest.getRegion() != null && !sRequest.getRegion().equals(soporte.getRegion())) {
+		if (sRequest.getRegion() != null) {
 			soporte.setRegion(sRequest.getRegion());
-			needUpdate = true;
 		}
-		if (sRequest.getAnyoSalidaDist() != null && !sRequest.getAnyoSalidaDist().equals(soporte.getAnyoSalidaDist())) {
+		if (sRequest.getAnyoSalidaDist() != null) {
 			soporte.setAnyoSalidaDist(sRequest.getAnyoSalidaDist());
-			needUpdate = true;
 		}
-		if (sRequest.getTienda() != null && !sRequest.getTienda().equals(soporte.getTienda())) {
+		if (sRequest.getTienda() != null) {
 			soporte.setTienda(sRequest.getTienda());
-			needUpdate = true;
-		}
-
-		// Finalmente, si es necesario actualizar, guardamos el soporte en la base de datos
-		if (needUpdate) {
-			soporte = soporteRepository.save(soporte);
 		}
 	
-		return soporte;
+		return soporteRepository.save(soporte);
 	}
-
+	
 }
