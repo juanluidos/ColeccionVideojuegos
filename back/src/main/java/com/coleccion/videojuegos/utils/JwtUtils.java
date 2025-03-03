@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
@@ -29,7 +30,9 @@ public class JwtUtils {
     // Crear y codificar el JWT
     public String createToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
-        String username = authentication.getPrincipal().toString();
+        
+        // Extraemos correctamente el nombre de usuario desde el objeto `UserDetails`
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
 
         // Obtener roles y convertirlos en array
         String[] authoritiesArray = authentication.getAuthorities()
@@ -37,16 +40,15 @@ public class JwtUtils {
                 .map(GrantedAuthority::getAuthority)
                 .toArray(String[]::new);
 
-        String jwtToken = JWT.create()
+        return JWT.create()
                 .withIssuer(this.userGenerator)
-                .withSubject(username)
-                .withArrayClaim("authorities", authoritiesArray) // ✅ Ahora se almacena como array
+                .withSubject(username) // ✅ Aquí guardamos solo el `username`
+                .withArrayClaim("authorities", authoritiesArray)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
                 .withJWTId(UUID.randomUUID().toString())
                 .withNotBefore(new Date(System.currentTimeMillis()))
                 .sign(algorithm);
-        return jwtToken;
     }
 
     // Decodificar el JWT y validarlo

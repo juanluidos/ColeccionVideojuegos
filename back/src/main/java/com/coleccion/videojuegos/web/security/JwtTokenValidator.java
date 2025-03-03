@@ -47,6 +47,7 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
             String username = jwtUtils.extractUsername(decodedJWT);
 
+            System.out.println("username: " + username);
             // Extraer authorities como array en lugar de string
             String[] authoritiesArray = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asArray(String.class);
             Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(authoritiesArray);

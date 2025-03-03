@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.coleccion.videojuegos.entity.Enums.Genero;
 import com.coleccion.videojuegos.entity.Enums.Plataforma;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,6 +54,7 @@ public class Videojuego {
     // Relación con Usuario
     @ManyToOne
     @JoinColumn(name = "USUARIO_ID", nullable = false)
+    @JsonBackReference
     private Usuario usuario;
 
     public void addProgreso(Progreso elementoProgreso) {

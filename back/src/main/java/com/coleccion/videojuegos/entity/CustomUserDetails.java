@@ -19,13 +19,16 @@ public class CustomUserDetails implements UserDetails {
         List<SimpleGrantedAuthority> authorities = usuario.getRoles().stream()
             .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().name()))
             .collect(Collectors.toList());
-
-        usuario.getRoles().stream()
-            .flatMap(role -> role.getPermissionList().stream())
-            .forEach(permiso -> authorities.add(new SimpleGrantedAuthority(permiso.getName())));
-
+    
+        if (usuario.getRoles() != null) {
+            usuario.getRoles().stream()
+                .flatMap(role -> role.getPermissionList().stream())
+                .map(permiso -> new SimpleGrantedAuthority(permiso.getName()))
+                .forEach(authorities::add);
+        }
+    
         return authorities;
-    }
+    }    
 
     @Override
     public String getPassword() {

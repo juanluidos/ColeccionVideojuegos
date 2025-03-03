@@ -3,6 +3,9 @@ package com.coleccion.videojuegos.entity;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.ArrayList;
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,5 +56,6 @@ public class Usuario {
 	// Relación con Videojuego: Un usuario puede registrar varios videojuegos
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
+	@JsonManagedReference 
 	private List<Videojuego> videojuegos = new ArrayList<>();
 }

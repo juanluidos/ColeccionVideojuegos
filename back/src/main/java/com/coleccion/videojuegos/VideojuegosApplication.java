@@ -27,7 +27,7 @@ public class VideojuegosApplication{
     @Bean
     CommandLineRunner init(UserRepository userRepository, PasswordEncoder passwordEncoder){
         return args -> {
-            if (userRepository.findUserByUsername("Juanlu").isEmpty()) {
+            if (userRepository. findUserByUsername("Juanlu").isEmpty()) {
                 Usuario userJuanlu = Usuario.builder()
                         .username("Juanlu")
                         .password(passwordEncoder.encode("1234"))

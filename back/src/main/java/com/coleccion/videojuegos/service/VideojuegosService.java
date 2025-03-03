@@ -3,11 +3,15 @@ package com.coleccion.videojuegos.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import com.coleccion.videojuegos.entity.CustomUserDetails;
 import com.coleccion.videojuegos.entity.Progreso;
 import com.coleccion.videojuegos.entity.Soporte;
 import com.coleccion.videojuegos.entity.Videojuego;
 import com.coleccion.videojuegos.entity.Usuario;
+import com.coleccion.videojuegos.repository.UserRepository;
 import com.coleccion.videojuegos.repository.VideojuegoRepository;
 import com.coleccion.videojuegos.web.requests.VideojuegoCompletoRequest;
 import com.coleccion.videojuegos.web.requests.VideojuegoRequest;
@@ -18,6 +22,9 @@ import jakarta.transaction.Transactional;
 public class VideojuegosService {
     @Autowired
     private VideojuegoRepository videojuegoRepository;
+
+	@Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private SoporteService soporteService;
@@ -39,12 +46,19 @@ public class VideojuegosService {
         return get(videojuegoRepository.findById(id));
     }
 
-    /**   Obtener lista de videojuegos de un usuario **/
-    public List<Videojuego> getVideojuegosByUsuario(Usuario usuario) {
-        return videojuegoRepository.findByUsuario(usuario).orElse(List.of());
-    }
+	public List<Videojuego> getVideojuegosByUsuario(Usuario usuario) {
+		System.out.println("Buscando videojuegos de usuario: " + usuario.getUsername()); // Debug
+		return videojuegoRepository.findByUsuario(usuario);
+	}
+	
 
-	public Videojuego newVideojuego(VideojuegoCompletoRequest vRequest) {
+
+	public Videojuego newVideojuego(VideojuegoCompletoRequest vRequest, String username) {
+		// 🔹 Buscar el usuario autenticado en la base de datos
+		Usuario usuario = userRepository.findUserByUsername(username)
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+	
+		// 🔹 Crear el videojuego con el usuario asociado
 		Videojuego videojuego = Videojuego.builder()
 				.nombre(vRequest.getNombre())
 				.precio(vRequest.getPrecio())
@@ -52,6 +66,7 @@ public class VideojuegosService {
 				.fechaCompra(vRequest.getFechaCompra())
 				.plataforma(vRequest.getPlataforma())
 				.genero(vRequest.getGenero())
+				.usuario(usuario)
 				.build();
 	
 		return videojuegoRepository.save(videojuego);
