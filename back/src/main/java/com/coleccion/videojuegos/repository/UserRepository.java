@@ -9,4 +9,7 @@ import com.coleccion.videojuegos.entity.Usuario;
 public interface UserRepository extends CrudRepository<Usuario, Integer>{
 
 	Optional<Usuario>  findUserByUsername(String username);
+
+	boolean existsByUsername(String username);
+
 }

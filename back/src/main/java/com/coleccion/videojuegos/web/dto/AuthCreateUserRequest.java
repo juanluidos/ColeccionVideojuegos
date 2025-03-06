@@ -1,4 +1,4 @@
-package com.coleccion.videojuegos.web.controllers.dto;
+package com.coleccion.videojuegos.web.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

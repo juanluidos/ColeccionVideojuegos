@@ -24,20 +24,20 @@ public class SoporteController {
     @Autowired
     private VideojuegosService videojuegosService;
 
-    @PreAuthorize("hasRole('ADMIN') or @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @GetMapping("/{idVideojuego}")
     public List<Soporte> getSoporte(@PathVariable("idVideojuego") Integer idVideojuego) throws Exception {
         return videojuegosService.getSoporteListByVideojuego(idVideojuego);
     }
 
-    @PreAuthorize("hasRole('USER') and @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('USER') and @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @PostMapping("/{idVideojuego}/new")
     public Soporte crearSoporte(@PathVariable("idVideojuego") Integer idVideojuego,
                                 @RequestBody SoporteRequest sRequest) throws Exception {
         return soporteService.newSoporte(idVideojuego, sRequest);
     }
 
-    @PreAuthorize("hasRole('USER') and @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('USER') and @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @PutMapping("/{idVideojuego}/{idSoporte}/change")
     public Soporte editarSoporte(@PathVariable("idVideojuego") Integer idVideojuego,
                                  @PathVariable("idSoporte") Integer idSoporte,
@@ -45,7 +45,7 @@ public class SoporteController {
         return soporteService.updateSoporte(idVideojuego, idSoporte, sRequest);
     }
 
-    @PreAuthorize("hasRole('USER') and @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('USER') and @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @DeleteMapping("/{idVideojuego}/{idSoporte}/delete")
     public ResponseEntity<String> deleteSoporte(@PathVariable("idVideojuego") Integer idVideojuego,
                                                 @PathVariable("idSoporte") Integer idSoporte) throws Exception {

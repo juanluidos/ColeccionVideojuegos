@@ -46,10 +46,10 @@ public class VideojuegosService {
         return get(videojuegoRepository.findById(id));
     }
 
-	public List<Videojuego> getVideojuegosByUsuario(Usuario usuario) {
-		System.out.println("Buscando videojuegos de usuario: " + usuario.getUsername()); // Debug
-		return videojuegoRepository.findByUsuario(usuario);
-	}
+	public List<Videojuego> getVideojuegosByUsuario(String username) {
+		System.out.println("Buscando videojuegos de usuario: " + username); // Debug
+		return videojuegoRepository.findByUsuario_Username(username);
+	}	
 	
 
 

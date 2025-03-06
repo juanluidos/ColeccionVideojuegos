@@ -14,6 +14,7 @@ import com.coleccion.videojuegos.entity.Usuario;
 import com.coleccion.videojuegos.entity.Videojuego;
 import com.coleccion.videojuegos.service.UserService;
 import com.coleccion.videojuegos.service.VideojuegosService;
+import com.coleccion.videojuegos.web.dto.UserDTO;
 import com.coleccion.videojuegos.web.requests.VideojuegoCompletoRequest;
 import com.coleccion.videojuegos.web.requests.VideojuegoRequest;
 
@@ -38,14 +39,22 @@ public class VideojuegoController {
     /** 🔹 Obtener los videojuegos del usuario autenticado **/
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/mis-videojuegos")
-    public List<Videojuego> getMisVideojuegos() {
-        Usuario usuario = userService.getAuthenticatedUser();
+    public ResponseEntity<?> getMisVideojuegos() {
+        ResponseEntity<?> response = userService.getAuthenticatedUser();
+        
+        if (response.getStatusCode() == HttpStatus.FORBIDDEN) {
+            return response;
+        }
+    
+        UserDTO usuario = (UserDTO) response.getBody();
+        
         System.out.println("Usuario autenticado: " + usuario.getUsername()); // Debug
-        return videojuegosService.getVideojuegosByUsuario(usuario);
-    }
+    
+        return ResponseEntity.ok(videojuegosService.getVideojuegosByUsuario(usuario.getUsername()));
+    }    
 
     /** 🔹 Obtener un videojuego por ID (Solo Admin o dueño del videojuego) **/
-    @PreAuthorize("hasRole('ADMIN') or @authorizationService.isOwner(#id, authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationUtils.isOwner(#id, authentication.name)")
     @GetMapping("/{id}")
     public Videojuego getVideojuego(@PathVariable("id") Integer id) throws Exception {
         return videojuegosService.getVideojuego(id);
@@ -59,7 +68,7 @@ public class VideojuegoController {
     }
 
     /** 🔹 Editar un videojuego (Solo Admin o dueño del videojuego) **/
-    @PreAuthorize("hasRole('ADMIN') or @authorizationService.isOwner(#id, authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationUtils.isOwner(#id, authentication.name)")
     @PutMapping("/{id}/change")
     public Videojuego editarVideojuego(@PathVariable("id") Integer id, @RequestBody VideojuegoRequest vRequest)
             throws Exception {
@@ -67,7 +76,7 @@ public class VideojuegoController {
     }
 
     /** 🔹 Eliminar un videojuego (Solo Admin o dueño del videojuego) **/
-    @PreAuthorize("hasRole('ADMIN') or @authorizationService.isOwner(#id, authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationUtils.isOwner(#id, authentication.name)")
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<String> deleteVideojuego(@PathVariable("id") Integer id) throws Exception {
         videojuegosService.deleteVideojuego(id);

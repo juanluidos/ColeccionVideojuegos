@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.coleccion.videojuegos.service.AuthorizationService;
 import com.coleccion.videojuegos.utils.JwtUtils;
 @Configuration
 @EnableWebSecurity
@@ -27,11 +26,6 @@ public class SecurityConfig {
 
     @Autowired
     private JwtUtils jwtUtils;
-
-    @Bean
-    public AuthorizationService authorizationService() {
-        return new AuthorizationService();
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

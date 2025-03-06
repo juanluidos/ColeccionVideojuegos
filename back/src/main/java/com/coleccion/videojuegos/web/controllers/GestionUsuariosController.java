@@ -5,60 +5,57 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import com.coleccion.videojuegos.entity.Usuario;
 import com.coleccion.videojuegos.service.UserService;
-import com.coleccion.videojuegos.web.controllers.dto.AuthCreateUserRequest;
+import com.coleccion.videojuegos.web.dto.AuthCreateUserRequest;
+import com.coleccion.videojuegos.web.dto.UserDTO;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/users")
+@RequestMapping("/api/v1/admin/users")
 public class GestionUsuariosController {
 
     @Autowired
     private UserService userService;
 
-    /**   Crear nuevo usuario (solo ADMIN) **/
+    /** ✅ Crear nuevo usuario (solo ADMIN) **/
     @Secured("ROLE_ADMIN")
     @PostMapping("/new")
-    public ResponseEntity<Usuario> createUser(@RequestBody AuthCreateUserRequest userRequest,
-                                              @AuthenticationPrincipal Usuario adminUser) {
-        Usuario newUser = userService.createUser(userRequest, adminUser);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    public ResponseEntity<?> createUser(@RequestBody AuthCreateUserRequest userRequest,
+                                        @AuthenticationPrincipal UserDetails adminUser) {
+        return userService.createUser(userRequest, adminUser.getUsername());
     }
 
-    /**   Obtener todos los usuarios **/
+    /** ✅ Obtener todos los usuarios **/
     @Secured("ROLE_ADMIN")
     @GetMapping("/")
-    public ResponseEntity<List<Usuario>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return userService.getAllUsers();
     }
 
-    /**   Obtener un usuario por ID **/
+    /** ✅ Obtener un usuario por ID **/
     @Secured("ROLE_ADMIN")
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUserById(@PathVariable Integer id) {
-        return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
+    public ResponseEntity<?> getUserById(@PathVariable Integer id) {
+        return userService.getUserById(id);
     }
 
-    /**   Eliminar usuario (solo ADMIN) **/
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<String> deleteUser(@PathVariable Integer id,
-                                             @AuthenticationPrincipal Usuario adminUser) {
-        userService.deleteUser(id, adminUser);
-        return ResponseEntity.ok("Usuario con ID " + id + " eliminado correctamente");
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id,
+                                        @AuthenticationPrincipal UserDetails adminUser) {
+        return userService.deleteUser(id, adminUser.getUsername());
     }
 
-    /**   Actualizar roles de un usuario (solo ADMIN) **/
+    /** ✅ Actualizar roles de un usuario (solo ADMIN) **/
     @Secured("ROLE_ADMIN")
     @PutMapping("/{id}/roles")
-    public ResponseEntity<Usuario> updateUserRoles(@PathVariable Integer id,
-                                                   @RequestBody List<String> roles,
-                                                   @AuthenticationPrincipal Usuario adminUser) {
-        Usuario updatedUser = userService.updateUserRoles(id, roles, adminUser);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    public ResponseEntity<?> updateUserRoles(@PathVariable Integer id,
+                                            @RequestBody List<String> roles,
+                                            @AuthenticationPrincipal UserDetails adminUser) {
+        return userService.updateUserRoles(id, roles, adminUser.getUsername());
     }
 }

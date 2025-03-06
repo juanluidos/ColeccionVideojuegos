@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import com.coleccion.videojuegos.entity.CustomUserDetails;
 import com.coleccion.videojuegos.repository.UserRepository;
 import com.coleccion.videojuegos.utils.JwtUtils;
-import com.coleccion.videojuegos.web.controllers.dto.AuthLoginRequest;
-import com.coleccion.videojuegos.web.controllers.dto.AuthResponse;
+import com.coleccion.videojuegos.web.dto.AuthLoginRequest;
+import com.coleccion.videojuegos.web.dto.AuthResponse;
 
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {

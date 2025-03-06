@@ -18,4 +18,7 @@ public interface VideojuegoRepository extends CrudRepository<Videojuego, Integer
 
     /**Obtener todos los videojuegos de un usuario **/
     List<Videojuego> findByUsuario(Usuario usuario);
+
+    List<Videojuego> findByUsuario_Username(String username);
+
 }

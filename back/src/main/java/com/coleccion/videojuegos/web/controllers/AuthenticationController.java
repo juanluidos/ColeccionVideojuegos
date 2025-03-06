@@ -7,14 +7,15 @@ import org.springframework.web.bind.annotation.*;
 
 import com.coleccion.videojuegos.service.UserDetailServiceImpl;
 import com.coleccion.videojuegos.service.UserService;
-import com.coleccion.videojuegos.web.controllers.dto.AuthCreateUserRequest;
-import com.coleccion.videojuegos.web.controllers.dto.AuthLoginRequest;
-import com.coleccion.videojuegos.web.controllers.dto.AuthResponse;
+import com.coleccion.videojuegos.web.dto.AuthCreateUserRequest;
+import com.coleccion.videojuegos.web.dto.AuthLoginRequest;
+import com.coleccion.videojuegos.web.dto.AuthResponse;
 
 import jakarta.validation.Valid;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthenticationController {
     
     @Autowired
@@ -23,15 +24,19 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    /**   Endpoint de Login **/
+    /** ✅ Endpoint de Login **/
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthLoginRequest userRequest) {
-        return new ResponseEntity<>(userDetailService.loginUser(userRequest), HttpStatus.OK);
+    public ResponseEntity<?> login(@RequestBody @Valid AuthLoginRequest userRequest) {
+        try {
+            return ResponseEntity.ok(userDetailService.loginUser(userRequest));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos.");
+        }
     }
 
-    /**   Endpoint de Signup **/
+    /** ✅ Endpoint de Signup **/
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> register(@RequestBody @Valid AuthCreateUserRequest userRequest) {
-        return new ResponseEntity<>(userService.registerUser(userRequest), HttpStatus.CREATED);
-    }    
+    public ResponseEntity<?> register(@RequestBody @Valid AuthCreateUserRequest userRequest) {
+        return userService.registerUser(userRequest);
+    }
 }

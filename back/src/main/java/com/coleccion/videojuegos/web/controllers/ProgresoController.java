@@ -24,20 +24,20 @@ public class ProgresoController {
     @Autowired
     private VideojuegosService videojuegosService;
 
-    @PreAuthorize("hasRole('ADMIN') or @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @GetMapping("/{idVideojuego}")
     public List<Progreso> getProgreso(@PathVariable("idVideojuego") Integer idVideojuego) throws Exception {
         return videojuegosService.getProgresoListByVideojuego(idVideojuego);
     }
 
-    @PreAuthorize("hasRole('USER') and @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('USER') and @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @PostMapping("/{idVideojuego}/new")
     public Progreso crearProgreso(@PathVariable("idVideojuego") Integer idVideojuego,
                                   @RequestBody ProgresoRequest pRequest) throws Exception {
         return progresoService.newProgreso(idVideojuego, pRequest);
     }
 
-    @PreAuthorize("hasRole('USER') and @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('USER') and @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @PutMapping("/{idVideojuego}/{idProgreso}/change")
     public Progreso editarProgreso(@PathVariable("idVideojuego") Integer idVideojuego,
                                    @PathVariable("idProgreso") Integer idProgreso,
@@ -45,7 +45,7 @@ public class ProgresoController {
         return progresoService.updateProgreso(idVideojuego, idProgreso, pRequest);
     }
 
-    @PreAuthorize("hasRole('USER') and @authorizationService.isOwner(#idVideojuego, authentication.name)")
+    @PreAuthorize("hasRole('USER') and @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @DeleteMapping("/{idVideojuego}/{idProgreso}/delete")
     public ResponseEntity<String> deleteProgreso(@PathVariable("idVideojuego") Integer idVideojuego,
                                                  @PathVariable("idProgreso") Integer idProgreso) throws Exception {
