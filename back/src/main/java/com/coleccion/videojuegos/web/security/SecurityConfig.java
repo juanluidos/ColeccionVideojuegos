@@ -34,14 +34,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
                     // Endpoints públicos
-                    auth.requestMatchers(HttpMethod.GET, "/public/**").permitAll();
-                    auth.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
-                    auth.requestMatchers(HttpMethod.POST, "/auth/signup").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/v1/public/**").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/signup").permitAll();
 
                     // Endpoints privados
                     auth.requestMatchers("/api/v1/videojuegos/**").authenticated(); // Se validará en los controladores
-                    auth.requestMatchers("/api/admin/**").hasRole("ADMIN");
-                    auth.requestMatchers("/api/users/**").hasRole("ADMIN");
+                    auth.requestMatchers("/api/v1/admin/**").authenticated();
+                    auth.requestMatchers("/api/v1/users/**").authenticated();
 
                     // Cualquier otro request será denegado
                     auth.anyRequest().denyAll();

@@ -1,7 +1,6 @@
 package com.coleccion.videojuegos.web.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,7 +14,7 @@ import com.coleccion.videojuegos.web.dto.UserDTO;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/admin/users")
+@RequestMapping("/api/v1/admin/gestionUsuarios")
 public class GestionUsuariosController {
 
     @Autowired
@@ -24,9 +23,8 @@ public class GestionUsuariosController {
     /** ✅ Crear nuevo usuario (solo ADMIN) **/
     @Secured("ROLE_ADMIN")
     @PostMapping("/new")
-    public ResponseEntity<?> createUser(@RequestBody AuthCreateUserRequest userRequest,
-                                        @AuthenticationPrincipal UserDetails adminUser) {
-        return userService.createUser(userRequest, adminUser.getUsername());
+    public ResponseEntity<?> createUser(@RequestBody AuthCreateUserRequest userRequest) {
+        return userService.createUser(userRequest);
     }
 
     /** ✅ Obtener todos los usuarios **/
@@ -45,17 +43,15 @@ public class GestionUsuariosController {
 
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<?> deleteUser(@PathVariable Integer id,
-                                        @AuthenticationPrincipal UserDetails adminUser) {
-        return userService.deleteUser(id, adminUser.getUsername());
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
+        return userService.deleteUser(id);
     }
 
     /** ✅ Actualizar roles de un usuario (solo ADMIN) **/
     @Secured("ROLE_ADMIN")
-    @PutMapping("/{id}/roles")
+    @PutMapping("/{id}/cambiarRoles")
     public ResponseEntity<?> updateUserRoles(@PathVariable Integer id,
-                                            @RequestBody List<String> roles,
-                                            @AuthenticationPrincipal UserDetails adminUser) {
-        return userService.updateUserRoles(id, roles, adminUser.getUsername());
+                                             @RequestBody List<String> roles) {
+        return userService.updateUserRoles(id, roles);
     }
 }

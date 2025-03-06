@@ -1,5 +1,6 @@
 package com.coleccion.videojuegos.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.coleccion.videojuegos.entity.CustomUserDetails;
@@ -81,7 +83,16 @@ public class UserService {
 
 
     /**   Crear usuario (SOLO ADMIN PUEDE CREAR USUARIOS) **/
-    public ResponseEntity<?> createUser(AuthCreateUserRequest userRequest, String adminUsername) {
+    public ResponseEntity<?> createUser(AuthCreateUserRequest userRequest) {
+        // ✅ Obtener usuario autenticado manualmente
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No estás autenticado.");
+        }
+
+        String adminUsername = authentication.getName(); // Obtener el nombre del usuario autenticado
+
         Usuario adminUser = userRepository.findUserByUsername(adminUsername)
                 .orElseThrow(() -> new RuntimeException("Admin no encontrado"));
 
@@ -127,7 +138,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado"));
     
         // ✅ Devolvemos un DTO en vez de la entidad completa
-        UserDTO userDTO = new UserDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail());
+        UserDTO userDTO = new UserDTO(usuario.getId(),
+                                    usuario.getUsername(),
+                                    usuario.getEmail(),
+                                    usuario.getRoles().stream()
+                                        .map(role -> role.getRole().name()).toList());
     
         return ResponseEntity.ok(userDTO);
     }
@@ -135,12 +150,19 @@ public class UserService {
 
     /**   Obtener todos los usuarios **/
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<Usuario> usuarios = (List<Usuario>) userRepository.findAll(); // Convertimos a List<Usuario> porq devuelve un Iterable el cual no se puede hacer stream
+        List<Usuario> usuarios = (List<Usuario>) userRepository.findAll(); // Convertimos a List<Usuario> para usar stream
         
         List<UserDTO> users = usuarios.stream()
-                .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getEmail()))
+                .map(user -> new UserDTO(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getRoles().stream()
+                                .map(role -> role.getRole().name()) // Convertimos los roles a nombres en String
+                                .toList()
+                ))
                 .toList();
-
+    
         return ResponseEntity.ok(users);
     }
 
@@ -151,7 +173,11 @@ public class UserService {
 
         if (usuarioOptional.isPresent()) {
             Usuario usuario = usuarioOptional.get();
-            UserDTO userDTO = new UserDTO(usuario.getId(), usuario.getUsername(), usuario.getEmail());
+            UserDTO userDTO = new UserDTO(usuario.getId(),
+            usuario.getUsername(),
+            usuario.getEmail(),
+            usuario.getRoles().stream()
+                .map(role -> role.getRole().name()).toList());
             return ResponseEntity.ok(userDTO);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
@@ -159,50 +185,68 @@ public class UserService {
     }
 
     /**   Eliminar usuario (SOLO ADMIN) **/
-    public ResponseEntity<?> deleteUser(Integer id, String adminUsername) {
+    @Transactional
+    public ResponseEntity<?> deleteUser(Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No estás autenticado.");
+        }
+    
+        String adminUsername = authentication.getName();
         Usuario adminUser = userRepository.findUserByUsername(adminUsername)
                 .orElseThrow(() -> new RuntimeException("Admin no encontrado"));
-
+    
         if (!adminUser.getRoles().stream().anyMatch(r -> r.getRole().equals(RoleEnum.ADMIN))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Solo los administradores pueden eliminar usuarios.");
         }
-
-        if (!userRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
-        }
-
+    
+        Usuario usuario = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
+    
+        // 🔹 Eliminar relaciones en la tabla intermedia antes de borrar el usuario
+        usuario.getRoles().clear();
+        userRepository.save(usuario); // Guardamos cambios antes de eliminar
+    
         userRepository.deleteById(id);
         return ResponseEntity.ok("Usuario con ID " + id + " eliminado correctamente.");
     }
 
 
-    public ResponseEntity<?> updateUserRoles(Integer id, List<String> roles, String adminUsername) {
+    public ResponseEntity<?> updateUserRoles(Integer id, List<String> roles) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No estás autenticado.");
+        }
+    
+        String adminUsername = authentication.getName();
         Usuario adminUser = userRepository.findUserByUsername(adminUsername)
                 .orElseThrow(() -> new RuntimeException("Admin no encontrado"));
     
         if (!adminUser.getRoles().stream().anyMatch(r -> r.getRole().equals(RoleEnum.ADMIN))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Solo los administradores pueden modificar roles.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Solo los administradores pueden eliminar usuarios.");
         }
     
-        Usuario usuario = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario usuario = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     
         List<RoleEnum> roleEnums;
         try {
             roleEnums = roles.stream()
-                .map(RoleEnum::valueOf)
-                .toList();
+                    .map(RoleEnum::valueOf)
+                    .toList();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Uno o más roles enviados no son válidos.");
         }
     
         List<Role> newRoles = roleRepository.findByRoleIn(roleEnums);
     
-        // ✅ Si los roles no han cambiado, no actualizamos la BD
         if (usuario.getRoles().containsAll(newRoles) && newRoles.containsAll(usuario.getRoles())) {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("El usuario ya tiene estos roles.");
         }
     
-        usuario.setRoles(Set.copyOf(newRoles));
+        usuario.setRoles(new HashSet<>(newRoles));
         userRepository.save(usuario);
     
         return ResponseEntity.ok("Roles actualizados correctamente.");

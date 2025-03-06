@@ -7,5 +7,5 @@ import java.util.List;
 
 @Validated
 public record AuthCreateRoleRequest(
-        @Size(max = 3, message = "El usuario no puede tener más de 3 roles") List<String> roleListName) {
+        @Size(max = 1, message = "El usuario no puede tener más de 1 rol") List<String> roleListName) {
 }
