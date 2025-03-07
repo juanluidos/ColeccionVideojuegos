@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.coleccion.videojuegos.entity.CustomUserDetails;
 import com.coleccion.videojuegos.entity.Role;
@@ -188,30 +189,33 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> deleteUser(Integer id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No estás autenticado.");
         }
-    
+
+        // ✅ Primero verificamos si el usuario a eliminar existe
+        Usuario usuario = userRepository.findById(id).orElse(null);
+        
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+
+        // ✅ Luego verificamos si el usuario autenticado es admin
         String adminUsername = authentication.getName();
-        Usuario adminUser = userRepository.findUserByUsername(adminUsername)
-                .orElseThrow(() -> new RuntimeException("Admin no encontrado"));
-    
-        if (!adminUser.getRoles().stream().anyMatch(r -> r.getRole().equals(RoleEnum.ADMIN))) {
+        Usuario adminUser = userRepository.findUserByUsername(adminUsername).orElse(null);
+
+        if (adminUser == null || adminUser.getRoles().stream().noneMatch(r -> r.getRole().equals(RoleEnum.ADMIN))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Solo los administradores pueden eliminar usuarios.");
         }
-    
-        Usuario usuario = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado."));
-    
+
         // 🔹 Eliminar relaciones en la tabla intermedia antes de borrar el usuario
         usuario.getRoles().clear();
         userRepository.save(usuario); // Guardamos cambios antes de eliminar
-    
+
         userRepository.deleteById(id);
         return ResponseEntity.ok("Usuario con ID " + id + " eliminado correctamente.");
     }
-
 
     public ResponseEntity<?> updateUserRoles(Integer id, List<String> roles) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

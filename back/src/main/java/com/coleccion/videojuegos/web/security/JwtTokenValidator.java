@@ -41,13 +41,8 @@ public class JwtTokenValidator extends OncePerRequestFilter {
             jwtToken = jwtToken.substring(7); // Eliminamos "Bearer "
 
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-
-            // Imprimir el JWT decodificado para depuración
-            System.out.println("Decoded JWT: " + decodedJWT);
-
             String username = jwtUtils.extractUsername(decodedJWT);
 
-            System.out.println("username: " + username);
             // Extraer authorities como array en lugar de string
             String[] authoritiesArray = jwtUtils.getSpecificClaim(decodedJWT, "authorities").asArray(String.class);
             Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(authoritiesArray);

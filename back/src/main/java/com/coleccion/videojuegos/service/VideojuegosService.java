@@ -53,62 +53,127 @@ public class VideojuegosService {
 	
 
 
-	public Videojuego newVideojuego(VideojuegoCompletoRequest vRequest, String username) {
-		// 🔹 Buscar el usuario autenticado en la base de datos
+	public Videojuego newVideojuego(VideojuegoCompletoRequest vRequest, String username){
 		Usuario usuario = userRepository.findUserByUsername(username)
-				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+			.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 	
-		// 🔹 Crear el videojuego con el usuario asociado
+		// Creamos el videojuego SIN el campo "tipo"
 		Videojuego videojuego = Videojuego.builder()
-				.nombre(vRequest.getNombre())
-				.precio(vRequest.getPrecio())
-				.fechaLanzamiento(vRequest.getFechaLanzamiento())
-				.fechaCompra(vRequest.getFechaCompra())
-				.plataforma(vRequest.getPlataforma())
-				.genero(vRequest.getGenero())
-				.usuario(usuario)
-				.build();
+			.nombre(vRequest.getNombre())
+			.precio(vRequest.getPrecio())
+			.fechaLanzamiento(vRequest.getFechaLanzamiento())
+			.fechaCompra(vRequest.getFechaCompra())
+			.plataforma(vRequest.getPlataforma())
+			.genero(vRequest.getGenero())
+			.usuario(usuario)
+			.build();
+	
+		// ✅ Si hay progresos, los agregamos
+		if (vRequest.getProgreso() != null) {
+			vRequest.getProgreso().forEach(p -> {
+				Progreso progreso = Progreso.builder()
+					.anyoJugado(p.getAnyoJugado())
+					.avance(p.getAvance())
+					.horasJugadas(p.getHorasJugadas())
+					.completadoCien(p.getCompletadoCien())
+					.nota(p.getNota())
+					.videojuego(videojuego)
+					.build();
+				videojuego.addProgreso(progreso);
+			});
+		}
+	
+		// ✅ Si hay soportes, los agregamos
+		if (vRequest.getSoporte() != null) {
+			vRequest.getSoporte().forEach(s -> {
+				Soporte soporte = Soporte.builder()
+					.tipo(s.getTipo()) // ⚡ Aquí sí se usa "tipo"
+					.estado(s.getEstado())
+					.edicion(s.getEdicion())
+					.distribucion(s.getDistribucion())
+					.precintado(s.getPrecintado())
+					.region(s.getRegion())
+					.anyoSalidaDist(s.getAnyoSalidaDist())
+					.tienda(s.getTienda())
+					.videojuego(videojuego)
+					.build();
+				videojuego.addSoporte(soporte);
+			});
+		}
 	
 		return videojuegoRepository.save(videojuego);
 	}
 	
-	public Videojuego updateVideojuego(Integer id, VideojuegoRequest vRequest) {
-		Optional<Videojuego> videojuegoOptional = videojuegoRepository.findById(id);
-		if (videojuegoOptional.isEmpty()) {
-			throw new RuntimeException("No existe dicho videojuego en la base de datos.");
-		}
+    public Videojuego updateVideojuego(Integer id, VideojuegoCompletoRequest vRequest, String username) {
+        // 1️⃣ Buscar el videojuego existente
+        Videojuego videojuego = videojuegoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Videojuego no encontrado"));
+    
+        // 2️⃣ Verificar que el usuario sea el dueño del videojuego
+        if (!videojuego.getUsuario().getUsername().equals(username)) {
+            throw new RuntimeException("No tienes permisos para modificar este videojuego");
+        }
+    
+        // 3️⃣ Actualizar los datos básicos del videojuego
+        videojuego.setNombre(vRequest.getNombre());
+        videojuego.setPrecio(vRequest.getPrecio());
+        videojuego.setFechaLanzamiento(vRequest.getFechaLanzamiento());
+        videojuego.setFechaCompra(vRequest.getFechaCompra());
+        videojuego.setPlataforma(vRequest.getPlataforma());
+        videojuego.setGenero(vRequest.getGenero());
+    
+        // 4️⃣ Actualizar los progresos (si los hay)
+        if (vRequest.getProgreso() != null) {
+            videojuego.getProgreso().clear();
+            vRequest.getProgreso().forEach(p -> {
+                Progreso progreso = Progreso.builder()
+                    .anyoJugado(p.getAnyoJugado())
+                    .avance(p.getAvance())
+                    .horasJugadas(p.getHorasJugadas())
+                    .completadoCien(p.getCompletadoCien())
+                    .nota(p.getNota())
+                    .videojuego(videojuego)
+                    .build();
+                videojuego.addProgreso(progreso);
+            });
+        }
+    
+        // 5️⃣ Actualizar los soportes (si los hay)
+        if (vRequest.getSoporte() != null) {
+            videojuego.getSoporte().clear();
+            vRequest.getSoporte().forEach(s -> {
+                Soporte soporte = Soporte.builder()
+                    .tipo(s.getTipo()) 
+                    .estado(s.getEstado())
+                    .edicion(s.getEdicion())
+                    .distribucion(s.getDistribucion())
+                    .precintado(s.getPrecintado())
+                    .region(s.getRegion())
+                    .anyoSalidaDist(s.getAnyoSalidaDist())
+                    .tienda(s.getTienda())
+                    .videojuego(videojuego)
+                    .build();
+                videojuego.addSoporte(soporte);
+            });
+        }
+    
+        // 6️⃣ Guardar cambios en la BD y retornar el videojuego actualizado
+        return videojuegoRepository.save(videojuego);
+    }
+    
 	
-		Videojuego videojuego = videojuegoOptional.get();
-	
-		// Actualizar solo si los valores no son nulos y han cambiado
-		if (vRequest.getNombre() != null) {
-			videojuego.setNombre(vRequest.getNombre());
-		}
-		if (vRequest.getPrecio() != null) {
-			videojuego.setPrecio(vRequest.getPrecio());
-		}
-		if (vRequest.getFechaLanzamiento() != null) {
-			videojuego.setFechaLanzamiento(vRequest.getFechaLanzamiento());
-		}
-		if (vRequest.getFechaCompra() != null) {
-			videojuego.setFechaCompra(vRequest.getFechaCompra());
-		}
-		if (vRequest.getPlataforma() != null) {
-			videojuego.setPlataforma(vRequest.getPlataforma());
-		}
-		if (vRequest.getGenero() != null) {
-			videojuego.setGenero(vRequest.getGenero());
-		}
-	
-		return videojuegoRepository.save(videojuego);
-	}
-	
-	public void deleteVideojuego(Integer id) {
-		if (!videojuegoRepository.existsById(id)) {
-			throw new RuntimeException("El videojuego con ID " + id + " no existe.");
-		}
-		videojuegoRepository.deleteById(id);
-	}	
+    public void deleteVideojuego(Integer id) {
+        Videojuego videojuego = videojuegoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("El videojuego con ID " + id + " no existe."));
+    
+        // 🔹 Eliminamos la relación con Progreso y Soporte antes de eliminar el videojuego
+        videojuego.getProgreso().clear();
+        videojuego.getSoporte().clear();
+        videojuegoRepository.save(videojuego);
+    
+        // 🔹 Ahora eliminamos el videojuego
+        videojuegoRepository.delete(videojuego);
+    }
 
     /**   Obtener progresos de un videojuego **/
     public List<Progreso> getProgresoListByVideojuego(Integer idVideojuego) {

@@ -2,44 +2,38 @@ package com.coleccion.videojuegos.web.requests;
 
 import java.sql.Date;
 import java.util.List;
-import lombok.Data;
+import com.coleccion.videojuegos.entity.Enums.*;
+import com.coleccion.videojuegos.web.dto.ProgresoDTO;
+import com.coleccion.videojuegos.web.dto.SoporteDTO;
 
-import com.coleccion.videojuegos.entity.Progreso;
-import com.coleccion.videojuegos.entity.Soporte;
-import com.coleccion.videojuegos.entity.Enums.Avance;
-import com.coleccion.videojuegos.entity.Enums.Distribucion;
-import com.coleccion.videojuegos.entity.Enums.Edicion;
-import com.coleccion.videojuegos.entity.Enums.Estado;
-import com.coleccion.videojuegos.entity.Enums.Genero;
-import com.coleccion.videojuegos.entity.Enums.Plataforma;
-import com.coleccion.videojuegos.entity.Enums.Region;
-import com.coleccion.videojuegos.entity.Enums.Tienda;
-import com.coleccion.videojuegos.entity.Enums.Tipo;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 @Data
 public class VideojuegoCompletoRequest {
+    private Integer id; // Solo para updates
 
-	private Integer id;
-	private String nombre; 
-	private Float precio; 
-	private Date fechaLanzamiento;
-	private Date fechaCompra;
-	private Plataforma plataforma;
-	private Genero genero;
-	private List<Progreso> progreso;
-	private List<Soporte> soporte;
-	private Tipo tipo;
-	private Estado estado;
-	private Edicion edicion; 
-	private Distribucion distribucion;
-	private Boolean precintado;
-	private Region region; 
-	private Integer anyoSalidaDist;
-	private Tienda tienda;
-	private Integer anyoJugado;
-	private Avance avance;
-	private Float horasJugadas; 
-	private Boolean completadoCien;
-	private Float nota;
-	
+    @NotNull(message = "El nombre es obligatorio")
+    @Size(min = 1, max = 255, message = "El nombre debe tener entre 1 y 255 caracteres")
+    private String nombre;
+
+    @Positive(message = "El precio debe ser positivo")
+    private Float precio;
+
+    private Date fechaLanzamiento;
+    private Date fechaCompra;
+
+    @NotNull(message = "La plataforma es obligatoria")
+    private Plataforma plataforma;
+
+    @NotNull(message = "El género es obligatorio")
+    private Genero genero;
+
+    // ⚡ Ya NO incluimos el campo "tipo" aquí porque pertenece a Soporte
+
+    // Listas opcionales para progresos y soportes
+    private List<ProgresoDTO> progreso;
+    private List<SoporteDTO> soporte;
 }
