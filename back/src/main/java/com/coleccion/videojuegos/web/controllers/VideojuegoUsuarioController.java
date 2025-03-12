@@ -10,10 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.coleccion.videojuegos.entity.Videojuego;
-import com.coleccion.videojuegos.service.VideojuegosService;
+import com.coleccion.videojuegos.service.VideojuegosUsuarioService;
 import com.coleccion.videojuegos.utils.AuthorizationUtils;
 import com.coleccion.videojuegos.web.requests.VideojuegoCompletoRequest;
-import com.coleccion.videojuegos.web.requests.VideojuegoRequest;
 
 @RestController
 @CrossOrigin(origins = { "*" })
@@ -21,7 +20,7 @@ import com.coleccion.videojuegos.web.requests.VideojuegoRequest;
 public class VideojuegoUsuarioController {
 
     @Autowired
-    private VideojuegosService videojuegosService;
+    private VideojuegosUsuarioService videojuegosService;
 
     @Autowired
     private AuthorizationUtils authorizationUtils;
@@ -51,7 +50,7 @@ public class VideojuegoUsuarioController {
     
 
     /** ✅ Editar un videojuego (solo si es dueño) **/
-    // No usamos el preauthorize porque antes necesitamos saber si el videojuego existe o no, para mejorar la respuesta al cliente
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}/editar")
     public ResponseEntity<?> editarVideojuego(@PathVariable("id") Integer id, 
                                               @RequestBody VideojuegoCompletoRequest vRequest, 

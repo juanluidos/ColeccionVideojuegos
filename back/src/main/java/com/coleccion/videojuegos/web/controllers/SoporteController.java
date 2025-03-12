@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.coleccion.videojuegos.entity.Soporte;
 import com.coleccion.videojuegos.service.SoporteService;
-import com.coleccion.videojuegos.service.VideojuegosService;
+import com.coleccion.videojuegos.service.VideojuegosUsuarioService;
 import com.coleccion.videojuegos.web.requests.SoporteRequest;
 
 @RestController
@@ -22,7 +22,7 @@ public class SoporteController {
     private SoporteService soporteService;
     
     @Autowired
-    private VideojuegosService videojuegosService;
+    private VideojuegosUsuarioService videojuegosService;
 
     @PreAuthorize("hasRole('ADMIN') or @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @GetMapping("/{idVideojuego}")

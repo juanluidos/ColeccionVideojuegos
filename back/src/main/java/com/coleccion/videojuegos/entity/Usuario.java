@@ -58,4 +58,10 @@ public class Usuario {
 	@Builder.Default
 	@JsonManagedReference 
 	private List<Videojuego> videojuegos = new ArrayList<>();
+
+	public List<String> getRolesAsStrings() {
+        return roles.stream()
+                    .map(role -> role.getRole().name()) // Convierte RoleEnum a String
+                    .toList();
+    }
 }

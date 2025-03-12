@@ -1,52 +1,57 @@
 package com.coleccion.videojuegos.web.controllers;
 
-import java.util.List;
-
+import com.coleccion.videojuegos.service.VideojuegosAdminService;
+import com.coleccion.videojuegos.web.dto.VideojuegoAdminDTO;
+import com.coleccion.videojuegos.web.requests.VideojuegoCompletoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import com.coleccion.videojuegos.entity.Videojuego;
-import com.coleccion.videojuegos.service.VideojuegosService;
-import com.coleccion.videojuegos.web.requests.VideojuegoRequest;
+import java.util.List;
 
 @RestController
-@CrossOrigin(origins = { "*" })
 @RequestMapping("/api/v1/admin/videojuegos")
+@PreAuthorize("hasRole('ADMIN')") // ✅ Todos los endpoints solo accesibles para admins
 public class VideojuegoAdminController {
 
     @Autowired
-    private VideojuegosService videojuegosService;
+    private VideojuegosAdminService videojuegosService;
 
-    /** ✅ Obtener TODOS los videojuegos (solo Admins) **/
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/")
-    public ResponseEntity<List<Videojuego>> getTodosLosVideojuegos() {
-        return ResponseEntity.ok(videojuegosService.listAllVideojuegos());
+    /** ✅ 1. Obtener TODOS los videojuegos (con información del usuario dueño) **/
+    @GetMapping
+    public ResponseEntity<List<VideojuegoAdminDTO>> getAllVideojuegos() {
+        List<VideojuegoAdminDTO> videojuegos = videojuegosService.getAllVideojuegos();
+        return ResponseEntity.ok(videojuegos);
     }
 
-    /** ✅ Obtener un videojuego por ID (cualquier juego) **/
-    @PreAuthorize("hasRole('ADMIN')")
+    /** ✅ 2. Obtener un videojuego por ID (con información del usuario dueño) **/
     @GetMapping("/{id}")
-    public ResponseEntity<Videojuego> getVideojuego(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(videojuegosService.getVideojuego(id));
+    public ResponseEntity<VideojuegoAdminDTO> getVideojuegoById(@PathVariable Integer id) {
+        VideojuegoAdminDTO videojuego = videojuegosService.getVideojuego(id);
+        return ResponseEntity.ok(videojuego);
     }
 
-    /** ✅ Editar un videojuego (solo Admins) **/
-    // @PreAuthorize("hasRole('ADMIN')")
-    // @PutMapping("/{id}/editar")
-    // public ResponseEntity<Videojuego> editarVideojuego(@PathVariable("id") Integer id, @RequestBody VideojuegoRequest vRequest) {
-    //     Videojuego actualizado = videojuegosService.updateVideojuego(id, vRequest);
-    //     return ResponseEntity.ok(actualizado);
-    // }
+    /** ✅ 3. Obtener todos los videojuegos de un usuario **/
+    @GetMapping("/usuario/{username}")
+    public ResponseEntity<List<VideojuegoAdminDTO>> getVideojuegosByUsuario(@PathVariable String username) {
+        List<VideojuegoAdminDTO> videojuegos = videojuegosService.getVideojuegosByUsuario(username);
+        return ResponseEntity.ok(videojuegos);
+    }
 
-    /** ✅ Eliminar un videojuego (solo Admins) **/
-    @PreAuthorize("hasRole('ADMIN')")
+    /** ✅ 4. Editar un videojuego de cualquier usuario (sin necesidad de verificación de dueño) **/
+    @PutMapping("/{id}/editar")
+    public ResponseEntity<VideojuegoAdminDTO> editarVideojuego(
+            @PathVariable Integer id,
+            @RequestBody VideojuegoCompletoRequest vRequest) {
+        VideojuegoAdminDTO actualizado = videojuegosService.updateVideojuego(id, vRequest);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    /** ✅ 5. Eliminar un videojuego de cualquier usuario **/
     @DeleteMapping("/{id}/eliminar")
-    public ResponseEntity<String> deleteVideojuego(@PathVariable("id") Integer id) {
+    public ResponseEntity<String> deleteVideojuego(@PathVariable Integer id) {
         videojuegosService.deleteVideojuego(id);
-        return ResponseEntity.ok("Videojuego con id " + id + " eliminado correctamente por un administrador.");
+        return ResponseEntity.ok("Videojuego con ID " + id + " eliminado correctamente.");
     }
 }

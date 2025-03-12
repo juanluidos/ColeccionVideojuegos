@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.coleccion.videojuegos.entity.Progreso;
 import com.coleccion.videojuegos.service.ProgresoService;
-import com.coleccion.videojuegos.service.VideojuegosService;
+import com.coleccion.videojuegos.service.VideojuegosUsuarioService;
 import com.coleccion.videojuegos.web.requests.ProgresoRequest;
 
 @RestController
@@ -22,7 +22,7 @@ public class ProgresoController {
     private ProgresoService progresoService;
     
     @Autowired
-    private VideojuegosService videojuegosService;
+    private VideojuegosUsuarioService videojuegosService;
 
     @PreAuthorize("hasRole('ADMIN') or @authorizationUtils.isOwner(#idVideojuego, authentication.name)")
     @GetMapping("/{idVideojuego}")

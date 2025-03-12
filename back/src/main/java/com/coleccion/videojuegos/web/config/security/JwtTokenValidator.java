@@ -1,4 +1,4 @@
-package com.coleccion.videojuegos.web.security;
+package com.coleccion.videojuegos.web.config.security;
 
 import java.io.IOException;
 import java.util.Collection;

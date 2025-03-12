@@ -1,4 +1,4 @@
-package com.coleccion.videojuegos.web.security;
+package com.coleccion.videojuegos.web.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

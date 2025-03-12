@@ -3,11 +3,18 @@ package com.coleccion.videojuegos.web.config;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    /** 🔹 Manejo de acceso denegado (403 Forbidden) **/
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acceso denegado: No tienes permisos para esta acción.");
+    }
 
     /** 🔹 Manejo de datos inválidos */
     @ExceptionHandler(IllegalArgumentException.class)
