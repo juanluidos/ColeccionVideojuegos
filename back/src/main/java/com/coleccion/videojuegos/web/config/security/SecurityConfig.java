@@ -40,8 +40,11 @@ public class SecurityConfig {
 
                     // Endpoints privados
                     auth.requestMatchers("/api/v1/videojuegos/**").authenticated(); // Se validará en los controladores
-                    auth.requestMatchers("/api/v1/admin/**").authenticated();
-                    auth.requestMatchers("/api/v1/users/**").authenticated();
+                    auth.requestMatchers("/api/v1/admin/**").authenticated(); // Se validará en los controladores
+                    auth.requestMatchers("/api/v1/users/**").authenticated(); // Se validará en los controladores
+                    auth.requestMatchers("/api/v1/soporte/**").authenticated(); // Se validará en los controladores
+                    auth.requestMatchers("/api/v1/progreso/**").authenticated(); // Se validará en los controladores
+
 
                     // Cualquier otro request será denegado
                     auth.anyRequest().denyAll();

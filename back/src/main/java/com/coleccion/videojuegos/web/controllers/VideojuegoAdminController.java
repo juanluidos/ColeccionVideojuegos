@@ -4,6 +4,7 @@ import com.coleccion.videojuegos.service.VideojuegosAdminService;
 import com.coleccion.videojuegos.web.dto.VideojuegoAdminDTO;
 import com.coleccion.videojuegos.web.requests.VideojuegoCompletoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,17 @@ public class VideojuegoAdminController {
         return ResponseEntity.ok(videojuegos);
     }
 
-    /** ✅ 4. Editar un videojuego de cualquier usuario (sin necesidad de verificación de dueño) **/
+    /** ✅ 4. Crear un videojuego para un usuario específico **/
+    @PostMapping("/usuario/{username}/crear")
+    public ResponseEntity<VideojuegoAdminDTO> crearVideojuegoParaUsuario(
+            @PathVariable String username, 
+            @RequestBody VideojuegoCompletoRequest vRequest) {
+        
+        VideojuegoAdminDTO nuevoVideojuego = videojuegosService.newVideojuegoParaUsuario(username, vRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoVideojuego);
+    }
+
+    /** ✅ 5. Editar un videojuego de cualquier usuario (sin necesidad de verificación de dueño) **/
     @PutMapping("/{id}/editar")
     public ResponseEntity<VideojuegoAdminDTO> editarVideojuego(
             @PathVariable Integer id,
@@ -48,7 +59,7 @@ public class VideojuegoAdminController {
         return ResponseEntity.ok(actualizado);
     }
 
-    /** ✅ 5. Eliminar un videojuego de cualquier usuario **/
+    /** ✅ 6. Eliminar un videojuego de cualquier usuario **/
     @DeleteMapping("/{id}/eliminar")
     public ResponseEntity<String> deleteVideojuego(@PathVariable Integer id) {
         videojuegosService.deleteVideojuego(id);
